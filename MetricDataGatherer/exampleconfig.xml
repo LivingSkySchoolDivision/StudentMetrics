@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- This file is case sensitive -->
+<Settings>
+  <Database>
+    <ConnectionStringInternal>data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false</ConnectionStringInternal>
+    <ConnectionStringSchoolLogic>data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false</ConnectionStringSchoolLogic>
+  </Database>
+  <Other>
+    <SchoolYearID>2018-2019</SchoolYearID>
+  </Other>
+</Settings>
