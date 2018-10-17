@@ -4,12 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LSKYStudentMetrics.Repositories;
+using LSKYStudentMetrics.Repositories.SchoolLogic;
+using LSKYStudentMetrics.Repositories.Internal;
+using MetricDataGatherer.SyncEngine;
 
 namespace MetricDataGatherer
 {
     class Program
-    {        
-        private static void Log(string msg)
+    {
+        public static void Log(string msg)
         {
             Console.WriteLine(DateTime.Now + ": " + msg);
         }
@@ -42,31 +46,27 @@ namespace MetricDataGatherer
                     configFile.Validate();
 
                     // Parse the working school year
-                    SchoolYearRepository schoolYearRepository = new SchoolYearRepository(configFile.DatabaseConnectionString_Internal);
+                    InternalSchoolYearRepository schoolYearRepository = new InternalSchoolYearRepository(configFile.DatabaseConnectionString_Internal);
                     SchoolYear schoolYear = schoolYearRepository.Get(configFile.SchoolYearName);
 
                     if (schoolYear == null) { throw new Exception("Invalid school year in config file: " + configFile.SchoolYearName); }
 
                     Log("Config file checks OK");
 
-
+                    LogDelegate logCallback = Log;
 
                     // Conduct the sync
 
+                    // Check to see if the school year specified in the config file is a valid one
+
                     // SCHOOLS
-                    // - Get a list of schools we already know about
-                    // - Get a list of schools in the SL database
-                    // - Update schools that exist, insert schools that don't
-
-                    Log("Syncing schools...");
-                    List<int> knownSchoolIDs = new List<int>();
-                    List<int> foundSchoolIDs = new List<int>();
-
-
+                    SchoolSync.Sync(configFile, false, logCallback);
 
                     // STUDENTS
 
                     // STUDENT GRADE LEVELS
+
+                    // Absences
 
 
 

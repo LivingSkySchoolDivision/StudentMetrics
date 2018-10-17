@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSKYStudentMetrics.Repositories.Internal
 {
-    public class SchoolYearRepository
+    public class InternalSchoolYearRepository
     {
         private const string sql = "SELECT * FROM SchoolYears;";
 
@@ -25,7 +25,7 @@ namespace LSKYStudentMetrics
             };
         }
 
-        public SchoolYearRepository(string SQLConnectionString)
+        public InternalSchoolYearRepository(string SQLConnectionString)
         {
             using (SqlConnection connection = new SqlConnection(SQLConnectionString))
             {
