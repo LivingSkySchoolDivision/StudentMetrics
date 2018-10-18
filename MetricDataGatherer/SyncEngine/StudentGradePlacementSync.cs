@@ -8,5 +8,9 @@ namespace MetricDataGatherer.SyncEngine
 {
     class StudentGradePlacementSync
     {
+        public delegate void LogDelegate(string msg);
+        public static void Sync(ConfigFile configFile, bool forceUpdate, LogDelegate Log)
+        {
+        }
     }
 }

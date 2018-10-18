@@ -25,6 +25,12 @@ namespace LSKYStudentMetrics
             return 0;
         }
 
+        public static char ParseChar(string thisString)
+        {
+            char returnMe = new char();
+            return Char.TryParse(thisString, out returnMe) ? returnMe : new char();
+        }
+
         public static float ParseFloat(string thisString)
         {
             float returnMe = 0;

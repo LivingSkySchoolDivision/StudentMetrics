@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace LSKYStudentMetrics
 {
-    public class AbsenceStatus
+    public class GradeLevel
     {
         public int ID { get; set; }
-        public string Content { get; set; }
+        public string Name { get; set; }
 
-        public UpdateCheck CheckIfUpdatesAreRequired(AbsenceStatus obj)
+
+        public UpdateCheck CheckIfUpdatesAreRequired(GradeLevel obj)
         {
             // Check to make sure that the ID matches, and return -1 if it does not
             if (this.ID != obj.ID)
@@ -22,7 +23,7 @@ namespace LSKYStudentMetrics
             // Check all properties of the objects to see if they are different
             int updates = 0;
 
-            if (!this.Content.Equals(obj.Content)) { updates++; }
+            if (!this.Name.Equals(obj.Name)) { updates++; }
 
             if (updates == 0)
             {

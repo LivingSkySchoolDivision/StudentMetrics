@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace LSKYStudentMetrics
 {
-    class StudentGradePlacement
+    public class StudentGradePlacement
     {
-
-
+        public int iStudentID { get; set; }
+        public GradeLevel GradeLevel { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

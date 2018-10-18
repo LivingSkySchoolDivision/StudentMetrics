@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace LSKYStudentMetrics.Repositories.Internal
 {
-    public class InternalSchoolRepository
+    public class InternalAbsenceReasonRepository
     {
-        private const string SelectSQL = "SELECT iSchoolID, cSchoolGovID, cName FROM Schools";
+        private const string SelectSQL = "SELECT iAttendanceReasonsID, cReason, lExcusable FROM AttendanceReasons";
         private string SQLConnectionString = string.Empty;
-        private Dictionary<int, School> _cache = new Dictionary<int, School>();
+        private Dictionary<int, AbsenceReason> _cache = new Dictionary<int, AbsenceReason>();
 
-        private School dataReaderToSchool(SqlDataReader dataReader)
+        private AbsenceReason dataReaderToObject(SqlDataReader dataReader)
         {
-            return new School()
+            return new AbsenceReason()
             {
-                iSchoolID = Parsers.ParseInt(dataReader["iSchoolID"].ToString().Trim()),
-                GovernmentID = dataReader["cSchoolGovID"].ToString().Trim(),
-                Name = dataReader["cName"].ToString().Trim()
+                ID = Parsers.ParseInt(dataReader["iAttendanceReasonsID"].ToString().Trim()),
+                Content = dataReader["cReason"].ToString().Trim(),
+                IsExcusable = Parsers.ParseBool(dataReader["lExcusable"].ToString().Trim())
             };
         }
 
@@ -28,7 +28,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
         {
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
-                _cache = new Dictionary<int, School>();
+                _cache = new Dictionary<int, AbsenceReason>();
                 using (SqlConnection connection = new SqlConnection(SQLConnectionString))
                 {
                     using (SqlCommand sqlCommand = new SqlCommand())
@@ -42,50 +42,53 @@ namespace LSKYStudentMetrics.Repositories.Internal
                         {
                             while (dataReader.Read())
                             {
-                                School parsedSchool = dataReaderToSchool(dataReader);
-                                if (parsedSchool != null)
+                                AbsenceReason parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
                                 {
-                                    _cache.Add(parsedSchool.iSchoolID, parsedSchool);
+                                    _cache.Add(parsedObject.ID, parsedObject);
                                 }
                             }
                         }
                         sqlCommand.Connection.Close();
                     }
                 }
-            } else
+            }
+            else
             {
                 throw new InvalidConnectionStringException("Connection string is empty");
             }
         }
 
-        public InternalSchoolRepository(string SQLConnectionString)
+        public InternalAbsenceReasonRepository(string SQLConnectionString)
         {
             this.SQLConnectionString = SQLConnectionString;
             _refreshCache();
         }
-        
-        public List<int> GetAllKnownSchoolIDs()
+
+        public List<int> GetAllIDs()
         {
             return _cache.Keys.ToList();
         }
 
-        public School Get(int iSchoolID)
+        public AbsenceReason Get(int iAbsenceStatusID)
         {
-            if (_cache.ContainsKey(iSchoolID))
+            if (_cache.ContainsKey(iAbsenceStatusID))
             {
-                return _cache[iSchoolID];
-            } else
+                return _cache[iAbsenceStatusID];
+            }
+            else
             {
                 return null;
             }
         }
 
-        public List<School> GetAll()
+        public List<AbsenceReason> GetAll()
         {
             return _cache.Values.ToList();
         }
 
-        public void Add(School school)
+
+        public void Add(AbsenceReason obj)
         {
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -96,10 +99,10 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "INSERT INTO Schools(iSchoolID, cSchoolGovID, cName) VALUES(@ISCHOOLID,@GOVID,@SCNAME)";
-                        sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
-                        sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
-                        sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
+                        sqlCommand.CommandText = "INSERT INTO AttendanceReasons(iAttendanceReasonsID, cReason, lExcusable) VALUES(@STATUSID,@CSTATUS,@EXCUSABLE)";
+                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
+                        sqlCommand.Parameters.AddWithValue("EXCUSABLE", obj.IsExcusable);
                         sqlCommand.Connection.Open();
                         sqlCommand.ExecuteNonQuery();
                         sqlCommand.Connection.Close();
@@ -115,7 +118,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             _refreshCache();
         }
 
-        public void Update(School school)
+        public void Update(AbsenceReason obj)
         {
             // Update database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -126,10 +129,10 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "UPDATE Schools SET cSchoolGovID=@GOVID, cName=@SCNAME WHERE iSchoolID=@ISCHOOLID";
-                        sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
-                        sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
-                        sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
+                        sqlCommand.CommandText = "UPDATE AttendanceReasons SET cReason=@CSTATUS, lExcusable=@EXCUSABLE WHERE iAttendanceReasonsID=@STATUSID";
+                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
+                        sqlCommand.Parameters.AddWithValue("EXCUSABLE", obj.IsExcusable);
                         sqlCommand.Connection.Open();
                         sqlCommand.ExecuteNonQuery();
                         sqlCommand.Connection.Close();

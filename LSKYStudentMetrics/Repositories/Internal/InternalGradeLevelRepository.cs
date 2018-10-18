@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace LSKYStudentMetrics.Repositories.Internal
 {
-    public class InternalSchoolRepository
+    public class InternalGradeLevelRepository
     {
-        private const string SelectSQL = "SELECT iSchoolID, cSchoolGovID, cName FROM Schools";
-        private string SQLConnectionString = string.Empty;
-        private Dictionary<int, School> _cache = new Dictionary<int, School>();
 
-        private School dataReaderToSchool(SqlDataReader dataReader)
+        private const string SelectSQL = "SELECT iGradeID, cName FROM GradeLevels";
+        private string SQLConnectionString = string.Empty;
+        private Dictionary<int, GradeLevel> _cache = new Dictionary<int, GradeLevel>();
+
+        private GradeLevel dataReaderToObject(SqlDataReader dataReader)
         {
-            return new School()
+            return new GradeLevel()
             {
-                iSchoolID = Parsers.ParseInt(dataReader["iSchoolID"].ToString().Trim()),
-                GovernmentID = dataReader["cSchoolGovID"].ToString().Trim(),
+                ID = Parsers.ParseInt(dataReader["iGradeID"].ToString().Trim()),
                 Name = dataReader["cName"].ToString().Trim()
             };
         }
@@ -28,7 +28,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
         {
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
-                _cache = new Dictionary<int, School>();
+                _cache = new Dictionary<int, GradeLevel>();
                 using (SqlConnection connection = new SqlConnection(SQLConnectionString))
                 {
                     using (SqlCommand sqlCommand = new SqlCommand())
@@ -42,50 +42,52 @@ namespace LSKYStudentMetrics.Repositories.Internal
                         {
                             while (dataReader.Read())
                             {
-                                School parsedSchool = dataReaderToSchool(dataReader);
-                                if (parsedSchool != null)
+                                GradeLevel parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
                                 {
-                                    _cache.Add(parsedSchool.iSchoolID, parsedSchool);
+                                    _cache.Add(parsedObject.ID, parsedObject);
                                 }
                             }
                         }
                         sqlCommand.Connection.Close();
                     }
                 }
-            } else
+            }
+            else
             {
                 throw new InvalidConnectionStringException("Connection string is empty");
             }
         }
 
-        public InternalSchoolRepository(string SQLConnectionString)
+        public InternalGradeLevelRepository(string SQLConnectionString)
         {
             this.SQLConnectionString = SQLConnectionString;
             _refreshCache();
         }
-        
-        public List<int> GetAllKnownSchoolIDs()
+
+        public List<int> GetAllIDs()
         {
             return _cache.Keys.ToList();
         }
 
-        public School Get(int iSchoolID)
+        public GradeLevel Get(int iAbsenceStatusID)
         {
-            if (_cache.ContainsKey(iSchoolID))
+            if (_cache.ContainsKey(iAbsenceStatusID))
             {
-                return _cache[iSchoolID];
-            } else
+                return _cache[iAbsenceStatusID];
+            }
+            else
             {
                 return null;
             }
         }
 
-        public List<School> GetAll()
+        public List<GradeLevel> GetAll()
         {
             return _cache.Values.ToList();
         }
 
-        public void Add(School school)
+        public void Add(GradeLevel obj)
         {
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -96,10 +98,9 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "INSERT INTO Schools(iSchoolID, cSchoolGovID, cName) VALUES(@ISCHOOLID,@GOVID,@SCNAME)";
-                        sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
-                        sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
-                        sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
+                        sqlCommand.CommandText = "INSERT INTO GradeLevels(iGradeID, cName) VALUES(@STATUSID,@CSTATUS)";
+                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Name);
                         sqlCommand.Connection.Open();
                         sqlCommand.ExecuteNonQuery();
                         sqlCommand.Connection.Close();
@@ -115,7 +116,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             _refreshCache();
         }
 
-        public void Update(School school)
+        public void Update(GradeLevel obj)
         {
             // Update database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -126,10 +127,9 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "UPDATE Schools SET cSchoolGovID=@GOVID, cName=@SCNAME WHERE iSchoolID=@ISCHOOLID";
-                        sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
-                        sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
-                        sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
+                        sqlCommand.CommandText = "UPDATE GradeLevels SET cName=@CSTATUS WHERE iGradeID=@STATUSID";
+                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Name);
                         sqlCommand.Connection.Open();
                         sqlCommand.ExecuteNonQuery();
                         sqlCommand.Connection.Close();

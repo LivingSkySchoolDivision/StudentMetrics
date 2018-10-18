@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace LSKYStudentMetrics.Repositories.SchoolLogic
 {
-    public class SLSchoolRepository
+    public class SLAbsenceReasonRepository
     {
-        private const string SelectSQL = "SELECT iSchoolID, cCode, cName FROM School WHERE iDistrictID=1";
+        private const string SelectSQL = "SELECT iAttendanceReasonsID, cName, lExcusable FROM AttendanceReasons";
         private string SQLConnectionString = string.Empty;
-        private Dictionary<int, School> _cache = new Dictionary<int, School>();
+        private Dictionary<int, AbsenceReason> _cache = new Dictionary<int, AbsenceReason>();
 
-        private School dataReaderToSchool(SqlDataReader dataReader)
+        private AbsenceReason dataReaderToObject(SqlDataReader dataReader)
         {
-            return new School()
+            return new AbsenceReason()
             {
-                iSchoolID = Parsers.ParseInt(dataReader["iSchoolID"].ToString().Trim()),
-                GovernmentID = dataReader["cCode"].ToString().Trim(),
-                Name = dataReader["cName"].ToString().Trim()
+                ID = Parsers.ParseInt(dataReader["iAttendanceReasonsID"].ToString().Trim()),
+                Content = dataReader["cName"].ToString().Trim(),
+                IsExcusable = Parsers.ParseBool(dataReader["lExcusable"].ToString().Trim())
             };
         }
 
@@ -28,7 +28,7 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
         {
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
-                _cache = new Dictionary<int, School>();
+                _cache = new Dictionary<int, AbsenceReason>();
                 using (SqlConnection connection = new SqlConnection(SQLConnectionString))
                 {
                     using (SqlCommand sqlCommand = new SqlCommand())
@@ -42,10 +42,10 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
                         {
                             while (dataReader.Read())
                             {
-                                School parsedSchool = dataReaderToSchool(dataReader);
-                                if (parsedSchool != null)
+                                AbsenceReason parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
                                 {
-                                    _cache.Add(parsedSchool.iSchoolID, parsedSchool);
+                                    _cache.Add(parsedObject.ID, parsedObject);
                                 }
                             }
                         }
@@ -59,7 +59,7 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
             }
         }
 
-        public SLSchoolRepository(string SQLConnectionString)
+        public SLAbsenceReasonRepository(string SQLConnectionString)
         {
             this.SQLConnectionString = SQLConnectionString;
             _refreshCache();
@@ -70,11 +70,11 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
             return _cache.Keys.ToList();
         }
 
-        public School Get(int iSchoolID)
+        public AbsenceReason Get(int iAbsenceStatusID)
         {
-            if (_cache.ContainsKey(iSchoolID))
+            if (_cache.ContainsKey(iAbsenceStatusID))
             {
-                return _cache[iSchoolID];
+                return _cache[iAbsenceStatusID];
             }
             else
             {
@@ -82,7 +82,7 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
             }
         }
 
-        public List<School> GetAll()
+        public List<AbsenceReason> GetAll()
         {
             return _cache.Values.ToList();
         }

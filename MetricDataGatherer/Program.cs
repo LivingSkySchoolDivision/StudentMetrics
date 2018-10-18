@@ -62,9 +62,21 @@ namespace MetricDataGatherer
                     // SCHOOLS
                     SchoolSync.Sync(configFile, false, logCallback);
 
+                    // GRADE LEVELS
+                    GradeLevelSync.Sync(configFile, false, logCallback);
+
                     // STUDENTS
+                    StudentSync.Sync(configFile, false, logCallback);
+
+                    // ABSENCE REASONS
+                    AbsenceReasonSync.Sync(configFile, false, logCallback);
+
+                    // ABSENCE STATUSES
+                    AbsenceStatusSync.Sync(configFile, false, logCallback);
+
 
                     // STUDENT GRADE LEVELS
+                    // Remembering to account for the currently selected school year
 
                     // Absences
 
