@@ -64,7 +64,7 @@ namespace MetricDataGatherer.SyncEngine
             // Commit these changes to the database
             if (previouslyUnknown.Count > 0)
             {
-                Log(" > Committing " + previouslyUnknown.Count() + " new grade placements");
+                Log(" > Committing " + previouslyUnknown.Count() + " new grade placements...");
                 internalRepository.Add(previouslyUnknown);
             }
 

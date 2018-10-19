@@ -77,9 +77,9 @@ namespace MetricDataGatherer
                     // ABSENCE STATUSES
                     AbsenceStatusSync.Sync(configFile, false, logCallback);
 
-
-                    // STUDENT GRADE LEVELS
-                    // Remembering to account for the currently selected school year
+                    // Absences
+                    AbsenceSync.Sync(configFile, false, logCallback);
+                    
 
                     // Absences
 
