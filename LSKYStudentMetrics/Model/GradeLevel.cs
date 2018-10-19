@@ -11,6 +11,17 @@ namespace LSKYStudentMetrics
         public int ID { get; set; }
         public string Name { get; set; }
 
+        public static GradeLevel Unknown
+        {
+            get
+            {
+                return new GradeLevel
+                {
+                    ID = -1,
+                    Name = "Unknown"
+                };
+            }
+        }
 
         public UpdateCheck CheckIfUpdatesAreRequired(GradeLevel obj)
         {

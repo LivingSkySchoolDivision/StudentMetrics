@@ -64,17 +64,10 @@ namespace MetricDataGatherer.SyncEngine
 
             // Commit these changes to the database
             Log("Processing " + previouslyUnknown.Count() + " adds...");
-            foreach (Student obj in previouslyUnknown)
-            {
-                internalRepository.Add(obj);
-            }
-
+            internalRepository.Add(previouslyUnknown);
+            
             Log("Processing " + needingUpdate.Count() + " updates...");
-            foreach (Student obj in needingUpdate)
-            {
-                internalRepository.Update(obj);
-            }
-
+            internalRepository.Update(needingUpdate);
 
             // Remove from the database here, but we don't currently care about that      
         }

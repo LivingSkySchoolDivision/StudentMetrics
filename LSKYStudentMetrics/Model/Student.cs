@@ -18,6 +18,19 @@ namespace LSKYStudentMetrics
 
         public List<StudentGradePlacement> GradePlacements { get; set; }
 
+        public GradeLevel GradeOn(DateTime thisDate)
+        {
+            foreach (StudentGradePlacement gp in GradePlacements)
+            {
+                if ((gp.SchoolYear.Starts <= thisDate) && (gp.SchoolYear.Ends >= thisDate))
+                {
+                    return gp.GradeLevel;
+                }
+            }
+
+            return GradeLevel.Unknown;
+        }
+
 
         public UpdateCheck CheckIfUpdatesAreRequired(Student student)
         {

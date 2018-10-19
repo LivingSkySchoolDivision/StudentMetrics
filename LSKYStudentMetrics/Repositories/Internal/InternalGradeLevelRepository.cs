@@ -70,11 +70,11 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return _cache.Keys.ToList();
         }
 
-        public GradeLevel Get(int iAbsenceStatusID)
+        public GradeLevel Get(int id)
         {
-            if (_cache.ContainsKey(iAbsenceStatusID))
+            if (_cache.ContainsKey(id))
             {
-                return _cache[iAbsenceStatusID];
+                return _cache[id];
             }
             else
             {

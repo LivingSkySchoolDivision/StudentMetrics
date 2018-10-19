@@ -65,6 +65,9 @@ namespace MetricDataGatherer
                     // GRADE LEVELS
                     GradeLevelSync.Sync(configFile, false, logCallback);
 
+                    // GRADE PLACEMENTS
+                    StudentGradePlacementSync.Sync(configFile, false, logCallback);
+
                     // STUDENTS
                     StudentSync.Sync(configFile, false, logCallback);
 

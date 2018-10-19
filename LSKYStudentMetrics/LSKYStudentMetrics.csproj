@@ -49,6 +49,7 @@
     <Compile Include="Model\Exceptions\ConfigFileNotFoundException.cs" />
     <Compile Include="Model\Exceptions\InvalidConfigFileException.cs" />
     <Compile Include="Model\Exceptions\InvalidConnectionStringException.cs" />
+    <Compile Include="Model\Exceptions\InvalidSchoolYearException.cs" />
     <Compile Include="Model\Exceptions\SyntaxException.cs" />
     <Compile Include="Model\GradeLevel.cs" />
     <Compile Include="Model\School.cs" />
@@ -60,12 +61,14 @@
     <Compile Include="Repositories\Internal\InternalAbsenceReasonRepository.cs" />
     <Compile Include="Repositories\Internal\InternalAbsenceStatusRepository.cs" />
     <Compile Include="Repositories\Internal\InternalGradeLevelRepository.cs" />
+    <Compile Include="Repositories\Internal\InternalGradePlacementRepository.cs" />
     <Compile Include="Repositories\Internal\InternalSchoolRepository.cs" />
     <Compile Include="Repositories\Internal\InternalSchoolYearRepository.cs" />
     <Compile Include="Repositories\Internal\InternalStudentRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceReasonRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceStatusRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLGradeLevelRepository.cs" />
+    <Compile Include="Repositories\SchoolLogic\SLGradePlacementRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLSchoolRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLStudentRepository.cs" />
   </ItemGroup>
