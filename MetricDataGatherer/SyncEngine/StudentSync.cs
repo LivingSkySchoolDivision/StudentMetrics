@@ -63,11 +63,17 @@ namespace MetricDataGatherer.SyncEngine
             Log("Found " + noLongerExistsInExternalSystem.Count() + " not in external database");
 
             // Commit these changes to the database
-            Log("Processing " + previouslyUnknown.Count() + " adds...");
-            internalRepository.Add(previouslyUnknown);
-            
-            Log("Processing " + needingUpdate.Count() + " updates...");
-            internalRepository.Update(needingUpdate);
+            if (previouslyUnknown.Count > 0)
+            {
+                Log("Processing " + previouslyUnknown.Count() + " adds...");
+                internalRepository.Add(previouslyUnknown);
+            }
+
+            if (needingUpdate.Count > 0)
+            {
+                Log("Processing " + needingUpdate.Count() + " updates...");
+                internalRepository.Update(needingUpdate);
+            }
 
             // Remove from the database here, but we don't currently care about that      
         }

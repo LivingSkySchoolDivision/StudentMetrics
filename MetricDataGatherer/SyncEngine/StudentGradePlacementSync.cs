@@ -43,7 +43,7 @@ namespace MetricDataGatherer.SyncEngine
                 // Check to see if we know about this object already                
                 StudentGradePlacement internalObject = internalRepository.Get(schoolYear, externalObject.iStudentID);
                 if (internalObject == null)
-                {
+                {   
                     previouslyUnknown.Add(externalObject);
                 }
 
@@ -62,11 +62,17 @@ namespace MetricDataGatherer.SyncEngine
             Log("Found " + needingUpdate.Count() + " with updates");
 
             // Commit these changes to the database
-            Log(" > Committing " + previouslyUnknown.Count() + " new grade placements");
-            internalRepository.Add(previouslyUnknown);
+            if (previouslyUnknown.Count > 0)
+            {
+                Log(" > Committing " + previouslyUnknown.Count() + " new grade placements");
+                internalRepository.Add(previouslyUnknown);
+            }
 
-            Log(" > Updating " + needingUpdate.Count() + " grade placements...");
-            internalRepository.Update(needingUpdate);
+            if (needingUpdate.Count > 0)
+            {
+                Log(" > Updating " + needingUpdate.Count() + " grade placements...");
+                internalRepository.Update(needingUpdate);
+            }
 
             
             //*/

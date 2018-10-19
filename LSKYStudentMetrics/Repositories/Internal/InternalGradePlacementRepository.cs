@@ -153,8 +153,8 @@ namespace LSKYStudentMetrics.Repositories.Internal
                             sqlCommand.CommandText = "INSERT INTO StudentGradeLevels(iStudentID, iGradeID, iSchoolYearID) VALUES(@STUDID,@GRADELEVELID,@SCHOOLYRID)";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("STUDID", obj.iStudentID);
-                            sqlCommand.Parameters.AddWithValue("GRADELEVELID", obj.GradeLevel.ID);
-                            sqlCommand.Parameters.AddWithValue("SCHOOLYRID", obj.SchoolYear.ID);
+                            sqlCommand.Parameters.AddWithValue("GRADELEVELID", obj.iGradeID);
+                            sqlCommand.Parameters.AddWithValue("SCHOOLYRID", obj.iSchoolYearID);
                             sqlCommand.ExecuteNonQuery();
                         }
                         sqlCommand.Connection.Close();
@@ -187,8 +187,8 @@ namespace LSKYStudentMetrics.Repositories.Internal
                             sqlCommand.CommandText = "UPDATE StudentGradeLevels SET iGradeID=@GRADELEVELID WHERE iStudentID=@STUDID AND iSchoolYearID=@SCHOOLYRID";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("STUDID", obj.iStudentID);
-                            sqlCommand.Parameters.AddWithValue("GRADELEVELID", obj.GradeLevel.ID);
-                            sqlCommand.Parameters.AddWithValue("SCHOOLYRID", obj.SchoolYear);
+                            sqlCommand.Parameters.AddWithValue("GRADELEVELID", obj.iGradeID);
+                            sqlCommand.Parameters.AddWithValue("SCHOOLYRID", obj.iSchoolYearID);
                             sqlCommand.ExecuteNonQuery();
                         }                        
                         sqlCommand.Connection.Close();
