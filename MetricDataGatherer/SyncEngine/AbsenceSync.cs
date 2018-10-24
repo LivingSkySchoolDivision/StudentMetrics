@@ -1,4 +1,5 @@
 ﻿using LSKYStudentMetrics;
+using LSKYStudentMetrics.Extensions;
 using LSKYStudentMetrics.Repositories.Internal;
 using LSKYStudentMetrics.Repositories.SchoolLogic;
 using System;
@@ -25,8 +26,9 @@ namespace MetricDataGatherer.SyncEngine
             InternalAbsenceRepository internalRepository = new InternalAbsenceRepository(configFile.DatabaseConnectionString_Internal);
             
             List<Absence> externalObjects = externalRepository.GetAll();
+            List<Absence> internalObjects = internalRepository.GetAll(schoolYear.ID);
 
-            Log("Found " + internalRepository.GetAll().Count() + " absences in internal database");
+            Log("Found " + internalObjects.Count() + " absences in internal database for this school year");
             Log("Found " + externalObjects.Count() + " absences in external database");
 
             // Find previously unknown schools
@@ -38,7 +40,7 @@ namespace MetricDataGatherer.SyncEngine
             foreach (Absence externalObject in externalObjects)
             {
                 // Check to see if we know about this school already
-                Absence internalObject = internalRepository.Get(externalObject.ID);
+                Absence internalObject = internalObjects.GetWithID(externalObject.ID);
                 if (internalObject == null)
                 {
                     previouslyUnknown.Add(externalObject);
@@ -58,7 +60,7 @@ namespace MetricDataGatherer.SyncEngine
 
             // Find schools that are no longer in the database that could potentially be cleaned up
             List<int> foundIDs = externalRepository.GetAllIDs();
-            foreach (Absence internalObject in internalRepository.GetAll())
+            foreach (Absence internalObject in internalObjects)
             {
                 if (!foundIDs.Contains(internalObject.ID))
                 {

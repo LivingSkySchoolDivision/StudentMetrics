@@ -10,9 +10,8 @@ namespace LSKYStudentMetrics.Repositories.Internal
 {
     public class InternalAbsenceRepository
     {
-        private const string SelectSQL = "SELECT * FROM Attendance";
+        // This repo deals with data too big to effectively cache, so it easier and faster to do seperate queries
         private string SQLConnectionString = string.Empty;
-        private Dictionary<int, Absence> _cache = new Dictionary<int, Absence>();
 
         private InternalAbsenceReasonRepository _reasonRepo = null;
         private InternalAbsenceStatusRepository _statusRepo = null;
@@ -38,28 +37,39 @@ namespace LSKYStudentMetrics.Repositories.Internal
             };
         }
 
-        private void _refreshCache()
+
+        public InternalAbsenceRepository(string SQLConnectionString)
         {
+            this.SQLConnectionString = SQLConnectionString;
+            this._reasonRepo = new InternalAbsenceReasonRepository(SQLConnectionString);
+            this._statusRepo = new InternalAbsenceStatusRepository(SQLConnectionString);
+        }
+
+        public List<int> GetAllIDs()
+        {
+            List<int> returnMe = new List<int>();
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
-                _cache = new Dictionary<int, Absence>();
                 using (SqlConnection connection = new SqlConnection(SQLConnectionString))
                 {
                     using (SqlCommand sqlCommand = new SqlCommand())
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = SelectSQL;
+                        sqlCommand.CommandText = "Select iAbsenceID from Attendance";
                         sqlCommand.Connection.Open();
                         SqlDataReader dataReader = sqlCommand.ExecuteReader();
                         if (dataReader.HasRows)
                         {
                             while (dataReader.Read())
                             {
-                                Absence parsedObject = dataReaderToObject(dataReader);
-                                if (parsedObject != null)
+                                int parsedID = Parsers.ParseInt(dataReader["iAbsenceID"].ToString().Trim());
+                                if (parsedID > 0)
                                 {
-                                    _cache.Add(parsedObject.ID, parsedObject);
+                                    if (!returnMe.Contains(parsedID))
+                                    {
+                                        returnMe.Add(parsedID);
+                                    }
                                 }
                             }
                         }
@@ -71,36 +81,121 @@ namespace LSKYStudentMetrics.Repositories.Internal
             {
                 throw new InvalidConnectionStringException("Connection string is empty");
             }
-        }
-
-        public InternalAbsenceRepository(string SQLConnectionString)
-        {
-            this.SQLConnectionString = SQLConnectionString;
-            this._reasonRepo = new InternalAbsenceReasonRepository(SQLConnectionString);
-            this._statusRepo = new InternalAbsenceStatusRepository(SQLConnectionString);
-            _refreshCache();
-        }
-
-        public List<int> GetAllIDs()
-        {
-            return _cache.Keys.ToList();
+            return returnMe;
         }
 
         public Absence Get(int iAbsenceStatusID)
         {
-            if (_cache.ContainsKey(iAbsenceStatusID))
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
-                return _cache[iAbsenceStatusID];
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT * FROM Attendance;";
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Absence parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
+                                {
+                                    return parsedObject;
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
             }
             else
             {
-                return null;
+                throw new InvalidConnectionStringException("Connection string is empty");
             }
+
+            return null;
         }
 
+        /// <summary>
+        /// Gets all absences from the internal database. This can take a very long time.
+        /// </summary>
+        /// <returns></returns>
+        [Obsolete("You should use a more specific version of GetAll, or your operation will take a long time.")]
         public List<Absence> GetAll()
         {
-            return _cache.Values.ToList();
+            List<Absence> returnMe = new List<Absence>();
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            {
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT * FROM Attendance;";
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Absence parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
+                                {
+                                    returnMe.Add(parsedObject);
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidConnectionStringException("Connection string is empty");
+            }
+            return returnMe;
+        }
+
+        public List<Absence> GetAll(int schoolYearID)
+        {
+            List<Absence> returnMe = new List<Absence>();
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            {
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE iSchoolYearID=@SYID;";
+                        sqlCommand.Parameters.AddWithValue("SYID", schoolYearID);
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Absence parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
+                                {
+                                    returnMe.Add(parsedObject);
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidConnectionStringException("Connection string is empty");
+            }
+            return returnMe;
         }
 
         public void Add(List<Absence> objs)
@@ -142,9 +237,6 @@ namespace LSKYStudentMetrics.Repositories.Internal
             {
                 throw new InvalidConnectionStringException("Connection string is empty");
             }
-
-            // Refresh cache from database
-            _refreshCache();
         }
 
         public void Update(List<Absence> objs)
@@ -186,10 +278,6 @@ namespace LSKYStudentMetrics.Repositories.Internal
             {
                 throw new InvalidConnectionStringException("Connection string is empty");
             }
-
-            // Refresh cache from database
-            _refreshCache();
-
         }
     }
 }
