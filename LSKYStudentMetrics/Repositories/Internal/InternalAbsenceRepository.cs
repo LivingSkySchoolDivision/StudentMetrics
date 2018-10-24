@@ -84,6 +84,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return returnMe;
         }
 
+        [Obsolete("You probably shouldn't be using this method, unless you are definitely only requiring one single absence record. Do not use this method in a loop.")]
         public Absence Get(int iAbsenceStatusID)
         {
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -161,7 +162,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return returnMe;
         }
 
-        public List<Absence> GetAll(int schoolYearID)
+        public List<Absence> GetForSchoolYear(int schoolYearID)
         {
             List<Absence> returnMe = new List<Absence>();
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -174,6 +175,44 @@ namespace LSKYStudentMetrics.Repositories.Internal
                         sqlCommand.CommandType = CommandType.Text;
                         sqlCommand.CommandText = "SELECT * FROM Attendance WHERE iSchoolYearID=@SYID;";
                         sqlCommand.Parameters.AddWithValue("SYID", schoolYearID);
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Absence parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
+                                {
+                                    returnMe.Add(parsedObject);
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidConnectionStringException("Connection string is empty");
+            }
+            return returnMe;
+        }
+
+        public List<Absence> Get(DateTime startDate, DateTime endDate)
+        {
+            List<Absence> returnMe = new List<Absence>();
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            {
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE dDate>=@STARTDATE AND dDate<=@ENDDATE";
+                        sqlCommand.Parameters.AddWithValue("STARTDATE", startDate);
+                        sqlCommand.Parameters.AddWithValue("ENDDATE", endDate);
                         sqlCommand.Connection.Open();
                         SqlDataReader dataReader = sqlCommand.ExecuteReader();
                         if (dataReader.HasRows)

@@ -26,7 +26,7 @@ namespace MetricDataGatherer.SyncEngine
             InternalAbsenceRepository internalRepository = new InternalAbsenceRepository(configFile.DatabaseConnectionString_Internal);
             
             List<Absence> externalObjects = externalRepository.GetAll();
-            List<Absence> internalObjects = internalRepository.GetAll(schoolYear.ID);
+            List<Absence> internalObjects = internalRepository.GetForSchoolYear(schoolYear.ID);
 
             Log("Found " + internalObjects.Count() + " absences in internal database for this school year");
             Log("Found " + externalObjects.Count() + " absences in external database");
