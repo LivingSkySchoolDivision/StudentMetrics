@@ -11,20 +11,25 @@ namespace MetricDataGatherer.SyncEngine
 {
     static class StudentSync
     {
-        public static void Sync(ConfigFile configFile, bool forceUpdate, LogDelegate Log)
+        public static void Sync(ConfigFile configFile, bool allowAdds, bool allowUpdates, bool allowRemovals, bool forceUpdate, LogDelegate Log)
         {
             Log("========= STUDENTS ========= ");
 
             SLStudentRepository externalRepository = new SLStudentRepository(configFile.DatabaseConnectionString_SchoolLogic);
             InternalStudentRepository internalRepository = new InternalStudentRepository(configFile.DatabaseConnectionString_Internal);
 
-            List<Student> objectsInThirdPartySystem = externalRepository.GetAll();
+            List<Student> externalObjects = externalRepository.GetAll();
 
             List<Student> previouslyUnknown = new List<Student>();
             List<Student> needingUpdate = new List<Student>();
             List<Student> noLongerExistsInExternalSystem = new List<Student>();
 
-            foreach(Student externalObject in objectsInThirdPartySystem)
+            int doneCount = 0;
+            int totalExternalObjects = externalObjects.Count();
+            decimal donePercent = 0;
+            decimal doneThresholdPercent = (decimal)0.1;
+            decimal doneThresholdIncrease = (decimal)0.1;
+            foreach (Student externalObject in externalObjects)
             {
                 // Objects we don't have in the database
                 Student internalObject = internalRepository.Get(externalObject.iStudentID);
@@ -39,24 +44,34 @@ namespace MetricDataGatherer.SyncEngine
                     UpdateCheck check = internalObject.CheckIfUpdatesAreRequired(externalObject);
                     if ((check == UpdateCheck.UpdatesRequired) || (forceUpdate))
                     {
-                        Log("Update required for " + internalObject.iStudentID);
                         needingUpdate.Add(externalObject);
                     }
-                }                
+                }
+
+                doneCount++;
+                donePercent = (decimal)((decimal)doneCount / (decimal)totalExternalObjects);
+                if (donePercent > doneThresholdPercent)
+                {
+                    doneThresholdPercent = doneThresholdPercent + doneThresholdIncrease;
+                    Log((int)(donePercent * 100) + "% finished inspecting objects");
+                }
             }
 
             // Objects in the internal database that aren't in the external database
-            List<int> foundIDs = externalRepository.GetAllIDs();
-            foreach (Student internalObject in internalRepository.GetAll())
+            if (allowRemovals)
             {
-                if (!foundIDs.Contains(internalObject.iStudentID))
+                List<int> foundIDs = externalRepository.GetAllIDs();
+                foreach (Student internalObject in internalRepository.GetAll())
                 {
-                    noLongerExistsInExternalSystem.Add(internalObject);
+                    if (!foundIDs.Contains(internalObject.iStudentID))
+                    {
+                        noLongerExistsInExternalSystem.Add(internalObject);
+                    }
                 }
             }
 
             Log("Found " + internalRepository.GetAll().Count() + " students in internal database");
-            Log("Found " + objectsInThirdPartySystem.Count() + " students in external database");
+            Log("Found " + externalObjects.Count() + " students in external database");
 
             Log("Found " + previouslyUnknown.Count() + " previously unknown");
             Log("Found " + needingUpdate.Count() + " with updates");
@@ -65,17 +80,43 @@ namespace MetricDataGatherer.SyncEngine
             // Commit these changes to the database
             if (previouslyUnknown.Count > 0)
             {
-                Log("Processing " + previouslyUnknown.Count() + " adds...");
-                internalRepository.Add(previouslyUnknown);
+                if (allowAdds)
+                {
+                    Log(" > Adding " + previouslyUnknown.Count() + " new objects");
+                    internalRepository.Add(previouslyUnknown);
+                }
+                else
+                {
+                    Log(" > Not allowed to add, skipping " + previouslyUnknown.Count() + " adds");
+
+                }
             }
+
 
             if (needingUpdate.Count > 0)
             {
-                Log("Processing " + needingUpdate.Count() + " updates...");
-                internalRepository.Update(needingUpdate);
+                if (allowUpdates)
+                {
+                    Log(" > Updating " + needingUpdate.Count() + " objects");
+                    internalRepository.Update(needingUpdate);
+                }
+                else
+                {
+                    Log(" > Not allowed to do updates, skipping " + needingUpdate.Count() + " updates");
+                }
             }
 
-            // Remove from the database here, but we don't currently care about that      
+            if (noLongerExistsInExternalSystem.Count > 0)
+            {
+                if (allowRemovals)
+                {
+                    Log(" > If removals were implemented, we would remove " + noLongerExistsInExternalSystem.Count() + " objects here");
+                }
+                else
+                {
+                    Log(" > Not allowed to remove, skipping " + noLongerExistsInExternalSystem.Count() + " removals");
+                }
+            }
         }
     }
 }

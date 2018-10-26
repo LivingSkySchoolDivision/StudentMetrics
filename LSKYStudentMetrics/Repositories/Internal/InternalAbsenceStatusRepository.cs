@@ -86,7 +86,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return _cache.Values.ToList();
         }
 
-        public void Add(AbsenceStatus obj)
+        public void Add(List<AbsenceStatus> objs)
         {
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -97,11 +97,15 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "INSERT INTO AttendanceStatuses(iAttendanceStatusID, cStatus) VALUES(@STATUSID,@CSTATUS)";
-                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
-                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (AbsenceStatus obj in objs)
+                        {
+                            sqlCommand.CommandText = "INSERT INTO AttendanceStatuses(iAttendanceStatusID, cStatus) VALUES(@STATUSID,@CSTATUS)";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                            sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }
@@ -115,7 +119,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             _refreshCache();
         }
 
-        public void Update(AbsenceStatus obj)
+        public void Update(List<AbsenceStatus> objs)
         {
             // Update database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -126,11 +130,15 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "UPDATE AttendanceStatuses SET cStatus=@CSTATUS WHERE iAttendanceStatusID=@STATUSID";
-                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
-                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (AbsenceStatus obj in objs)
+                        {
+                            sqlCommand.CommandText = "UPDATE AttendanceStatuses SET cStatus=@CSTATUS WHERE iAttendanceStatusID=@STATUSID";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                            sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }

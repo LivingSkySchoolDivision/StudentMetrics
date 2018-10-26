@@ -11,7 +11,7 @@ namespace MetricDataGatherer.SyncEngine
 {
     class GradeLevelSync
     {
-        public static void Sync(ConfigFile configFile, bool forceUpdate, LogDelegate Log)
+        public static void Sync(ConfigFile configFile, bool allowAdds, bool allowUpdates, bool allowRemovals, bool forceUpdate, LogDelegate Log)
         {
             Log("========= GRADE LEVELS ========= ");
             InternalGradeLevelRepository internalRepository = new InternalGradeLevelRepository(configFile.DatabaseConnectionString_Internal);
@@ -43,19 +43,21 @@ namespace MetricDataGatherer.SyncEngine
                     UpdateCheck check = internalObject.CheckIfUpdatesAreRequired(externalObject);
                     if ((check == UpdateCheck.UpdatesRequired) || (forceUpdate))
                     {
-                        Log("Update required for " + externalObject.ID);
                         needingUpdate.Add(externalObject);
                     }
                 }
             }
 
             // Find schools that are no longer in the database that could potentially be cleaned up
-            List<int> foundIDs = externalRepository.GetAllIDs();
-            foreach (GradeLevel internalObject in internalRepository.GetAll())
+            if (allowRemovals)
             {
-                if (!foundIDs.Contains(internalObject.ID))
+                List<int> foundIDs = externalRepository.GetAllIDs();
+                foreach (GradeLevel internalObject in internalRepository.GetAll())
                 {
-                    noLongerExistsInExternalSystem.Add(internalObject);
+                    if (!foundIDs.Contains(internalObject.ID))
+                    {
+                        noLongerExistsInExternalSystem.Add(internalObject);
+                    }
                 }
             }
 
@@ -64,19 +66,45 @@ namespace MetricDataGatherer.SyncEngine
             Log("Found " + noLongerExistsInExternalSystem.Count() + " not in external database");
 
             // Commit these changes to the database
-            foreach (GradeLevel obj in previouslyUnknown)
+            if (previouslyUnknown.Count > 0)
             {
-                Log(" > Adding new grade: " + obj.Name);
-                internalRepository.Add(obj);
+                if (allowAdds)
+                {
+                    Log(" > Adding " + previouslyUnknown.Count() + " new objects");
+                    internalRepository.Add(previouslyUnknown);
+                }
+                else
+                {
+                    Log(" > Not allowed to add, skipping " + previouslyUnknown.Count() + " adds");
+
+                }
             }
 
-            foreach (GradeLevel obj in needingUpdate)
+
+            if (needingUpdate.Count > 0)
             {
-                Log(" > Updating grade: " + obj.Name);
-                internalRepository.Update(obj);
+                if (allowUpdates)
+                {
+                    Log(" > Updating " + needingUpdate.Count() + " objects");
+                    internalRepository.Update(needingUpdate);
+                }
+                else
+                {
+                    Log(" > Not allowed to do updates, skipping " + needingUpdate.Count() + " updates");
+                }
             }
 
-            // Remove from the database here, but we don't currently care about that               
+            if (noLongerExistsInExternalSystem.Count > 0)
+            {
+                if (allowRemovals)
+                {
+                    Log(" > If removals were implemented, we would remove " + noLongerExistsInExternalSystem.Count() + " objects here");
+                }
+                else
+                {
+                    Log(" > Not allowed to remove, skipping " + noLongerExistsInExternalSystem.Count() + " removals");
+                }
+            }
 
         }
     }

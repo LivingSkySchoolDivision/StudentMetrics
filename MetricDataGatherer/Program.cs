@@ -52,6 +52,16 @@ namespace MetricDataGatherer
                     if (schoolYear == null) { throw new Exception("Invalid school year in config file: " + configFile.SchoolYearName); }
 
                     Log("Config file checks OK");
+                    // Display information on what we're allowed to do based on the config file
+                    Log("Permissions summary:");                    
+                    Log("Absences: \t\t" + configFile.AbsencePermissions.ToString());
+                    Log("AbsenceStatuses: \t" + configFile.AbsenceStatusPermissions.ToString());
+                    Log("AbsenceReasons: \t\t" + configFile.AbsenceReasonPermissions.ToString());
+                    Log("GradeLevels: \t\t" + configFile.GradeLevelPermissions.ToString());
+                    Log("Schools: \t\t" + configFile.SchoolPermissions.ToString());
+                    Log("StudentGradePlacements: \t" + configFile.StudentGradePlacementPermissions.ToString());
+                    Log("Students: \t\t" + configFile.StudentPermissions.ToString());
+
 
                     LogDelegate logCallback = Log;
 
@@ -60,27 +70,28 @@ namespace MetricDataGatherer
                     // Check to see if the school year specified in the config file is a valid one
 
                     // SCHOOLS
-                    SchoolSync.Sync(configFile, false, logCallback);
+                    SchoolSync.Sync(configFile, configFile.SchoolPermissions.AllowAdds, configFile.SchoolPermissions.AllowUpdates, configFile.SchoolPermissions.AllowRemovals, configFile.SchoolPermissions.ForceUpdate, logCallback);
 
                     // GRADE LEVELS
-                    GradeLevelSync.Sync(configFile, false, logCallback);
+                    GradeLevelSync.Sync(configFile, configFile.GradeLevelPermissions.AllowAdds, configFile.GradeLevelPermissions.AllowUpdates, configFile.GradeLevelPermissions.AllowRemovals, configFile.GradeLevelPermissions.ForceUpdate, logCallback);
 
                     // GRADE PLACEMENTS
-                    StudentGradePlacementSync.Sync(configFile, false, logCallback);
+                    StudentGradePlacementSync.Sync(configFile, configFile.StudentGradePlacementPermissions.AllowAdds, configFile.StudentGradePlacementPermissions.AllowUpdates, configFile.StudentGradePlacementPermissions.AllowRemovals, configFile.StudentGradePlacementPermissions.ForceUpdate, logCallback);
 
                     // STUDENTS
-                    StudentSync.Sync(configFile, false, logCallback);
+                    StudentSync.Sync(configFile, configFile.StudentPermissions.AllowAdds, configFile.StudentPermissions.AllowUpdates, configFile.StudentPermissions.AllowRemovals, configFile.StudentPermissions.ForceUpdate, logCallback);
 
                     // ABSENCE REASONS
-                    AbsenceReasonSync.Sync(configFile, false, logCallback);
+                    AbsenceReasonSync.Sync(configFile, configFile.AbsenceReasonPermissions.AllowAdds, configFile.AbsenceReasonPermissions.AllowUpdates, configFile.AbsenceReasonPermissions.AllowRemovals, configFile.AbsenceReasonPermissions.ForceUpdate, logCallback);
 
                     // ABSENCE STATUSES
-                    AbsenceStatusSync.Sync(configFile, false, logCallback);
+                    AbsenceStatusSync.Sync(configFile, configFile.AbsenceStatusPermissions.AllowAdds, configFile.AbsenceStatusPermissions.AllowUpdates, configFile.AbsenceStatusPermissions.AllowRemovals, configFile.AbsenceStatusPermissions.ForceUpdate, logCallback);
 
                     // Absences
-                    AbsenceSync.Sync(configFile, false, logCallback);
-                    
+                    AbsenceSync.Sync(configFile, configFile.AbsencePermissions.AllowAdds, configFile.AbsencePermissions.AllowUpdates, configFile.AbsencePermissions.AllowRemovals, configFile.AbsencePermissions.ForceUpdate, logCallback);
 
+
+                    // Absences
                     // Absences
 
 

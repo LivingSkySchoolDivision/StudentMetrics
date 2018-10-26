@@ -85,7 +85,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return _cache.Values.ToList();
         }
 
-        public void Add(School school)
+        public void Add(List<School> objs)
         {
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -96,12 +96,16 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "INSERT INTO Schools(iSchoolID, cSchoolGovID, cName) VALUES(@ISCHOOLID,@GOVID,@SCNAME)";
-                        sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
-                        sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
-                        sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (School school in objs)
+                        {
+                            sqlCommand.CommandText = "INSERT INTO Schools(iSchoolID, cSchoolGovID, cName) VALUES(@ISCHOOLID,@GOVID,@SCNAME)";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
+                            sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
+                            sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }
@@ -115,7 +119,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             _refreshCache();
         }
 
-        public void Update(School school)
+        public void Update(List<School> objs)
         {
             // Update database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -126,12 +130,16 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "UPDATE Schools SET cSchoolGovID=@GOVID, cName=@SCNAME WHERE iSchoolID=@ISCHOOLID";
-                        sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
-                        sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
-                        sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (School school in objs)
+                        {
+                            sqlCommand.CommandText = "UPDATE Schools SET cSchoolGovID=@GOVID, cName=@SCNAME WHERE iSchoolID=@ISCHOOLID";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("ISCHOOLID", school.iSchoolID);
+                            sqlCommand.Parameters.AddWithValue("GOVID", school.GovernmentID);
+                            sqlCommand.Parameters.AddWithValue("SCNAME", school.Name);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }

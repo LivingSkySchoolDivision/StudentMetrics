@@ -11,7 +11,7 @@ namespace MetricDataGatherer.SyncEngine
 {
     class StudentGradePlacementSync
     {
-        public static void Sync(ConfigFile configFile, bool forceUpdate, LogDelegate Log)
+        public static void Sync(ConfigFile configFile, bool allowAdds, bool allowUpdates, bool allowRemovals, bool forceUpdate, LogDelegate Log)
         {
             Log("========= GRADE PLACEMENTS FOR " + configFile.SchoolYearName + " ========= ");
             // Parse the school year from the config file, we'll need it later            
@@ -38,6 +38,11 @@ namespace MetricDataGatherer.SyncEngine
             List<StudentGradePlacement> needingUpdate = new List<StudentGradePlacement>();
             List<StudentGradePlacement> noLongerExistsInExternalSystem = new List<StudentGradePlacement>();
 
+            int doneCount = 0;
+            int totalExternalObjects = externalObjects.Count();
+            decimal donePercent = 0;
+            decimal doneThresholdPercent = (decimal)0.1;
+            decimal doneThresholdIncrease = (decimal)0.1;
             foreach (StudentGradePlacement externalObject in externalObjects)
             {
                 // Check to see if we know about this object already                
@@ -56,6 +61,14 @@ namespace MetricDataGatherer.SyncEngine
                         needingUpdate.Add(externalObject);
                     }
                 }
+
+                doneCount++;
+                donePercent = (decimal)((decimal)doneCount / (decimal)totalExternalObjects);
+                if (donePercent > doneThresholdPercent)
+                {
+                    doneThresholdPercent = doneThresholdPercent + doneThresholdIncrease;
+                    Log((int)(donePercent * 100) + "% finished inspecting objects");
+                }
             }
             
             Log("Found " + previouslyUnknown.Count() + " previously unknown");
@@ -64,18 +77,43 @@ namespace MetricDataGatherer.SyncEngine
             // Commit these changes to the database
             if (previouslyUnknown.Count > 0)
             {
-                Log(" > Committing " + previouslyUnknown.Count() + " new grade placements...");
-                internalRepository.Add(previouslyUnknown);
+                if (allowAdds)
+                {
+                    Log(" > Adding " + previouslyUnknown.Count() + " new objects");
+                    internalRepository.Add(previouslyUnknown);
+                }
+                else
+                {
+                    Log(" > Not allowed to add, skipping " + previouslyUnknown.Count() + " adds");
+
+                }
             }
+
 
             if (needingUpdate.Count > 0)
             {
-                Log(" > Updating " + needingUpdate.Count() + " grade placements...");
-                internalRepository.Update(needingUpdate);
+                if (allowUpdates)
+                {
+                    Log(" > Updating " + needingUpdate.Count() + " objects");
+                    internalRepository.Update(needingUpdate);
+                }
+                else
+                {
+                    Log(" > Not allowed to do updates, skipping " + needingUpdate.Count() + " updates");
+                }
             }
 
-            
-            //*/
+            if (noLongerExistsInExternalSystem.Count > 0)
+            {
+                if (allowRemovals)
+                {
+                    Log(" > If removals were implemented, we would remove " + noLongerExistsInExternalSystem.Count() + " objects here");
+                }
+                else
+                {
+                    Log(" > Not allowed to remove, skipping " + noLongerExistsInExternalSystem.Count() + " removals");
+                }
+            }
         }
     }
 }

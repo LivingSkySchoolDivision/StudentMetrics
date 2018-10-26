@@ -87,7 +87,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return _cache.Values.ToList();
         }
 
-        public void Add(GradeLevel obj)
+        public void Add(List<GradeLevel> objs)
         {
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -98,11 +98,15 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "INSERT INTO GradeLevels(iGradeID, cName) VALUES(@STATUSID,@CSTATUS)";
-                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
-                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Name);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (GradeLevel obj in objs)
+                        {
+                            sqlCommand.CommandText = "INSERT INTO GradeLevels(iGradeID, cName) VALUES(@STATUSID,@CSTATUS)";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                            sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Name);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }
@@ -116,7 +120,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             _refreshCache();
         }
 
-        public void Update(GradeLevel obj)
+        public void Update(List<GradeLevel> objs)
         {
             // Update database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -127,11 +131,14 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "UPDATE GradeLevels SET cName=@CSTATUS WHERE iGradeID=@STATUSID";
-                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
-                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Name);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (GradeLevel obj in objs) {
+                            sqlCommand.CommandText = "UPDATE GradeLevels SET cName=@CSTATUS WHERE iGradeID=@STATUSID";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                            sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Name);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }

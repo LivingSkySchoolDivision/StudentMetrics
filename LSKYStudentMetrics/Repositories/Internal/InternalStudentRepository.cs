@@ -120,18 +120,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             // Refresh cache from database
             _refreshCache();
         }
-
-        public void Add(Student obj)
-        {
-            Add(new List<Student>() { obj });
-        }
-
-
-        public void Update(Student obj)
-        {
-            Update(new List<Student>() { obj });
-        }
-
+        
         public void Update(List<Student> obj)
         {
             // Update database

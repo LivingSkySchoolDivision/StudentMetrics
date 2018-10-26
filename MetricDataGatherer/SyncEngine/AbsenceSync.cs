@@ -12,7 +12,7 @@ namespace MetricDataGatherer.SyncEngine
 {
     class AbsenceSync
     {
-        public static void Sync(ConfigFile configFile, bool forceUpdate, LogDelegate Log)
+        public static void Sync(ConfigFile configFile, bool allowAdds, bool allowUpdates, bool allowRemovals, bool forceUpdate, LogDelegate Log)
         {
             Log("========= ABSENCES ========= ");
             // Parse the school year from the config file, we'll need it later            
@@ -37,6 +37,11 @@ namespace MetricDataGatherer.SyncEngine
             List<Absence> needingUpdate = new List<Absence>();
             List<Absence> noLongerExistsInExternalSystem = new List<Absence>();
 
+            int doneCount = 0;
+            int totalExternalObjects = externalObjects.Count();
+            decimal donePercent = 0;
+            decimal doneThresholdPercent = (decimal)0.1;
+            decimal doneThresholdIncrease = (decimal)0.1;
             foreach (Absence externalObject in externalObjects)
             {
                 // Check to see if we know about this school already
@@ -51,42 +56,77 @@ namespace MetricDataGatherer.SyncEngine
                 {
                     UpdateCheck check = internalObject.CheckIfUpdatesAreRequired(externalObject);
                     if ((check == UpdateCheck.UpdatesRequired) || (forceUpdate))
-                    {
-                        Log("Update required for " + externalObject.ID);
+                    {                        
                         needingUpdate.Add(externalObject);
                     }
+                }
+
+                doneCount++;
+                donePercent = (decimal)((decimal)doneCount / (decimal)totalExternalObjects);                
+                if (donePercent > doneThresholdPercent)
+                {
+                    doneThresholdPercent = doneThresholdPercent + doneThresholdIncrease;
+                    Log((int)(donePercent*100) + "% finished inspecting objects");
                 }
             }
 
             // Find schools that are no longer in the database that could potentially be cleaned up
-            List<int> foundIDs = externalRepository.GetAllIDs();
-            foreach (Absence internalObject in internalObjects)
+            if (allowRemovals)
             {
-                if (!foundIDs.Contains(internalObject.ID))
+                List<int> foundIDs = externalRepository.GetAllIDs();
+                foreach (Absence internalObject in internalObjects)
                 {
-                    noLongerExistsInExternalSystem.Add(internalObject);
+                    if (!foundIDs.Contains(internalObject.ID))
+                    {
+                        noLongerExistsInExternalSystem.Add(internalObject);
+                    }
                 }
             }
 
             Log("Found " + previouslyUnknown.Count() + " previously unknown");
             Log("Found " + needingUpdate.Count() + " with updates");
             Log("Found " + noLongerExistsInExternalSystem.Count() + " not in external database");
-            
+
             // Commit these changes to the database
+            
             if (previouslyUnknown.Count > 0)
             {
-                Log(" > Committing " + previouslyUnknown.Count() + " new absences...");
-                internalRepository.Add(previouslyUnknown);
-            }
+                if (allowAdds)
+                {
+                    Log(" > Adding " + previouslyUnknown.Count() + " new objects");
+                    internalRepository.Add(previouslyUnknown);
+                } else
+                {
+                    Log(" > Not allowed to add, skipping " + previouslyUnknown.Count() + " adds");
 
+                }
+            }           
+
+            
             if (needingUpdate.Count > 0)
             {
-                Log(" > Updating " + needingUpdate.Count() + " absences...");
-                internalRepository.Update(needingUpdate);
+                if (allowUpdates)
+                {
+                    Log(" > Updating " + needingUpdate.Count() + " objects");
+                    internalRepository.Update(needingUpdate);
+                } else
+                {
+                    Log(" > Not allowed to do updates, skipping " + needingUpdate.Count() + " updates");
+                }
             }
 
-            // Remove from the database here, but we don't currently care about that               
-            //*/
+            if (noLongerExistsInExternalSystem.Count > 0)
+            {
+                if (allowRemovals)
+                {
+                    Log(" > If removals were implemented, we would remove " + noLongerExistsInExternalSystem.Count() + " objects here");
+                } else
+                {
+                    Log(" > Not allowed to remove, skipping " + noLongerExistsInExternalSystem.Count() + " removals");
+                }
+            }
+
+            
         }
     }
 }

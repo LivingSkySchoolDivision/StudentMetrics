@@ -120,6 +120,8 @@ namespace LSKYStudentMetrics
             {
                 if (thisDatabaseValue.ToLower().Equals("yes")) { return true; }
                 if (thisDatabaseValue.ToLower().Equals("no")) { return false; }
+                if (thisDatabaseValue.ToLower().Equals("true")) { return true; }
+                if (thisDatabaseValue.ToLower().Equals("false")) { return false; }
 
                 bool parsedBool = false;
                 Boolean.TryParse(thisDatabaseValue, out parsedBool);

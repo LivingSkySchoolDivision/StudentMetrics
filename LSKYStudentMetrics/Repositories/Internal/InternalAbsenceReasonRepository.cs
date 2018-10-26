@@ -88,7 +88,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
         }
 
 
-        public void Add(AbsenceReason obj)
+        public void Add(List<AbsenceReason> objs)
         {
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -99,12 +99,16 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "INSERT INTO AttendanceReasons(iAttendanceReasonsID, cReason, lExcusable) VALUES(@STATUSID,@CSTATUS,@EXCUSABLE)";
-                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
-                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
-                        sqlCommand.Parameters.AddWithValue("EXCUSABLE", obj.IsExcusable);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (AbsenceReason obj in objs)
+                        {
+                            sqlCommand.CommandText = "INSERT INTO AttendanceReasons(iAttendanceReasonsID, cReason, lExcusable) VALUES(@STATUSID,@CSTATUS,@EXCUSABLE)";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                            sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
+                            sqlCommand.Parameters.AddWithValue("EXCUSABLE", obj.IsExcusable);
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }
@@ -118,7 +122,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
             _refreshCache();
         }
 
-        public void Update(AbsenceReason obj)
+        public void Update(List<AbsenceReason> objs)
         {
             // Update database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -129,12 +133,16 @@ namespace LSKYStudentMetrics.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "UPDATE AttendanceReasons SET cReason=@CSTATUS, lExcusable=@EXCUSABLE WHERE iAttendanceReasonsID=@STATUSID";
-                        sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
-                        sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
-                        sqlCommand.Parameters.AddWithValue("EXCUSABLE", obj.IsExcusable);
                         sqlCommand.Connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        foreach (AbsenceReason obj in objs)
+                        {
+                            sqlCommand.CommandText = "UPDATE AttendanceReasons SET cReason=@CSTATUS, lExcusable=@EXCUSABLE WHERE iAttendanceReasonsID=@STATUSID";
+                            sqlCommand.Parameters.Clear();
+                            sqlCommand.Parameters.AddWithValue("STATUSID", obj.ID);
+                            sqlCommand.Parameters.AddWithValue("CSTATUS", obj.Content);
+                            sqlCommand.Parameters.AddWithValue("EXCUSABLE", obj.IsExcusable);                            
+                            sqlCommand.ExecuteNonQuery();
+                        }
                         sqlCommand.Connection.Close();
                     }
                 }
