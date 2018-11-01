@@ -90,12 +90,8 @@ namespace MetricDataGatherer
                     // Absences
                     AbsenceSync.Sync(configFile, configFile.AbsencePermissions.AllowAdds, configFile.AbsencePermissions.AllowUpdates, configFile.AbsencePermissions.AllowRemovals, configFile.AbsencePermissions.ForceUpdate, logCallback);
 
-
-                    // Absences
-                    // Absences
-
-
-
+                    // STUDENT EXPECTED BLOCKS PER DAY
+                    StudentExpectedBlocksSync.Sync(configFile, logCallback);
 
                 }
                 else

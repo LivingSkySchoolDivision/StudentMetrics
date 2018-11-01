@@ -10,12 +10,14 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
 {
     public class SLStudentRepository
     {
+        
         private const string SelectSQL = "SELECT Student.iStudentID, Student.dBirthdate, cStudentNumber,GenderLV.cCode as cGender,AborigStatus.cName as cAborigStatus FROM Student " +
                                             "LEFT OUTER JOIN LookupValues as GenderLV ON Student.iLV_GenderID=GenderLV.iLookupValuesID " +
                                             "LEFT OUTER JOIN UserStudent ON Student.iStudentID=UserStudent.iStudentID " +
                                             "LEFT OUTER JOIN LookupValues as AborigStatus ON UserStudent.UF_1656_1=AborigStatus.iLookupValuesID";
         private string SQLConnectionString = string.Empty;
         private Dictionary<int, Student> _cache = new Dictionary<int, Student>();
+        private List<int> _justEnrolled = new List<int>();
 
         private Student dataReaderToStudent(SqlDataReader dataReader)
         {
@@ -34,6 +36,8 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
                 _cache = new Dictionary<int, Student>();
+                _justEnrolled = new List<int>();
+
                 using (SqlConnection connection = new SqlConnection(SQLConnectionString))
                 {
                     using (SqlCommand sqlCommand = new SqlCommand())
@@ -51,6 +55,30 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
                                 if (parsedStudent != null)
                                 {
                                     _cache.Add(parsedStudent.iStudentID, parsedStudent);
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT DISTINCT(iStudentID) FROM Enrollment";
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                int id = Parsers.ParseInt(dataReader["iStudentID"].ToString().Trim());
+                                if (id > 0)
+                                {
+                                    if (!_justEnrolled.Contains(id))
+                                    {
+                                        _justEnrolled.Add(id);
+                                    }                                    
                                 }
                             }
                         }
@@ -91,6 +119,18 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
         {
             return _cache.Keys.ToList();
         }
+
+        public List<int> GetActiveIDs()
+        {
+            return _justEnrolled;
+        }
+
+        public List<Student> GetActive()
+        {
+            return _cache.Values.Where(student => _justEnrolled.Contains(student.iStudentID)).ToList();
+        }
+
+
 
 
     }
