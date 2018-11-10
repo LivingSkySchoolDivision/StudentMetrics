@@ -10,14 +10,18 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
 {
     public class SLStudentRepository
     {
-        
-        private const string SelectSQL = "SELECT Student.iStudentID, Student.dBirthdate, cStudentNumber,GenderLV.cCode as cGender,AborigStatus.cName as cAborigStatus FROM Student " +
+
+        private const string SelectSQL = "SELECT Student.iStudentID, Student.dBirthdate, cStudentNumber,GenderLV.cCode as cGender,AborigStatus.cName as cAborigStatus, Track.lDaily, Track.iTrackID FROM Student " +
                                             "LEFT OUTER JOIN LookupValues as GenderLV ON Student.iLV_GenderID=GenderLV.iLookupValuesID " +
                                             "LEFT OUTER JOIN UserStudent ON Student.iStudentID=UserStudent.iStudentID " +
-                                            "LEFT OUTER JOIN LookupValues as AborigStatus ON UserStudent.UF_1656_1=AborigStatus.iLookupValuesID";
+                                            "LEFT OUTER JOIN LookupValues as AborigStatus ON UserStudent.UF_1656_1=AborigStatus.iLookupValuesID " +
+                                            "LEFT OUTER JOIN Track ON Student.iTrackID=Track.iTrackID; ";
         private string SQLConnectionString = string.Empty;
         private Dictionary<int, Student> _cache = new Dictionary<int, Student>();
-        private List<int> _justEnrolled = new List<int>();
+        private List<int> _enrolledInAClass = new List<int>();
+        private List<int> _enrolledInASchool = new List<int>();
+        private List<int> _dailyAttendance = new List<int>();
+        private List<int> _periodAttendance = new List<int>();
 
         private Student dataReaderToStudent(SqlDataReader dataReader)
         {
@@ -36,7 +40,8 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {
                 _cache = new Dictionary<int, Student>();
-                _justEnrolled = new List<int>();
+                _enrolledInAClass = new List<int>();
+                _enrolledInASchool = new List<int>();
 
                 using (SqlConnection connection = new SqlConnection(SQLConnectionString))
                 {
@@ -55,12 +60,26 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
                                 if (parsedStudent != null)
                                 {
                                     _cache.Add(parsedStudent.iStudentID, parsedStudent);
+
+                                    if (Parsers.ParseInt(dataReader["iTrackID"].ToString().Trim()) > 0)
+                                    {
+                                        bool isTrackDaily = Parsers.ParseBool(dataReader["lDaily"].ToString().Trim());
+                                        if (isTrackDaily)
+                                        {
+                                            _dailyAttendance.Add(parsedStudent.iStudentID);
+                                        }
+                                        else
+                                        {
+                                            _periodAttendance.Add(parsedStudent.iStudentID);
+                                        }
+                                    }                                    
                                 }
                             }
                         }
                         sqlCommand.Connection.Close();
                     }
 
+                    // Find students enrolled in at least one class this school year
                     using (SqlCommand sqlCommand = new SqlCommand())
                     {
                         sqlCommand.Connection = connection;
@@ -75,10 +94,10 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
                                 int id = Parsers.ParseInt(dataReader["iStudentID"].ToString().Trim());
                                 if (id > 0)
                                 {
-                                    if (!_justEnrolled.Contains(id))
+                                    if (!_enrolledInAClass.Contains(id))
                                     {
-                                        _justEnrolled.Add(id);
-                                    }                                    
+                                        _enrolledInAClass.Add(id);
+                                    }
                                 }
                             }
                         }
@@ -119,19 +138,16 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
         {
             return _cache.Keys.ToList();
         }
-
-        public List<int> GetActiveIDs()
+        
+        public List<Student> GetDailyAttendanceStudents()
         {
-            return _justEnrolled;
+            return _cache.Values.Where(student => _dailyAttendance.Contains(student.iStudentID)).ToList();
         }
 
-        public List<Student> GetActive()
+        public List<Student> GetPeriodAttendanceStudents()
         {
-            return _cache.Values.Where(student => _justEnrolled.Contains(student.iStudentID)).ToList();
+            return _cache.Values.Where(student => _periodAttendance.Contains(student.iStudentID)).ToList();
         }
-
-
-
 
     }
 }

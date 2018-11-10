@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LSKYStudentMetrics.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,27 @@ namespace LSKYStudentMetrics
 {
     public class SchoolClassSchedule
     {
+        public int iClassID { get; set; }
+
         private List<Term> _classTerms = new List<Term>();
 
         // Dictionary<term ID, Dictionary<day number, List<block number>>>
         private Dictionary<int, Dictionary<int, List<int>>> _classBlockNumbersByDay = new Dictionary<int, Dictionary<int, List<int>>>();
         
+
+        public SchoolClassSchedule(int iClassID)
+        {
+            this.iClassID = iClassID;
+            this._classTerms = new List<Term>();
+            this._classBlockNumbersByDay = new Dictionary<int, Dictionary<int, List<int>>>();
+        }
+
+        public SchoolClassSchedule(int iClassID, List<Term> classTerms)
+        {
+            this._classTerms = classTerms;
+            this.iClassID = iClassID;
+            this._classBlockNumbersByDay = new Dictionary<int, Dictionary<int, List<int>>>();
+        }
 
         /// <summary>
         /// Returns the block number that this class is scheduled for on the given date, or zero if the class is not scheduled on that day
@@ -34,10 +51,13 @@ namespace LSKYStudentMetrics
                     int dayNumber = term.Track.Schedule.GetSchoolDayOn(thisDate);
                     if (dayNumber > 0)
                     {
-                        if (_classBlockNumbersByDay[term.ID].ContainsKey(dayNumber))
+                        if (_classBlockNumbersByDay.ContainsKey(term.ID))
                         {
-                            return _classBlockNumbersByDay[term.ID][dayNumber];
-                        }
+                            if (_classBlockNumbersByDay[term.ID].ContainsKey(dayNumber))
+                            {
+                                return _classBlockNumbersByDay[term.ID][dayNumber];
+                            }
+                        }                        
                     }
                 }
             }
@@ -47,38 +67,23 @@ namespace LSKYStudentMetrics
                 
         public void AddScheduleDay(int term, int day, int block)
         {
-            // THIS WAS COPIED OVER FROM THE TRACK SCHEDULE AND WILL NEED TO BE REWRITTEN
-            if (!string.IsNullOrEmpty(dayNumber))
+            if ((term > 0) && (day > 0) && (block > 0))
             {
-                if ((dayNumber != "N") && (dayNumber != "0"))
+                if (!_classBlockNumbersByDay.ContainsKey(term))
                 {
-                    int parsedDayNum = Parsers.ParseInt(dayNumber);
-                    if (parsedDayNum > 0)
-                    {
-                        if (!_days.ContainsKey(date.Year))
-                        {
-                            _days.Add(date.Year, new Dictionary<int, Dictionary<int, int>>());
-                        }
+                    _classBlockNumbersByDay.Add(term, new Dictionary<int, List<int>>());
+                }
 
-                        if (!_days[date.Year].ContainsKey(date.Month))
-                        {
-                            _days[date.Year].Add(date.Month, new Dictionary<int, int>());
-                        }
+                if (!_classBlockNumbersByDay[term].ContainsKey(day))
+                {
+                    _classBlockNumbersByDay[term].Add(day, new List<int>());
+                }
 
-                        if (!_days[date.Year][date.Month].ContainsKey(date.Day))
-                        {
-                            _days[date.Year][date.Month].Add(date.Day, parsedDayNum);
-                        }
-                        else
-                        {
-                            _days[date.Year][date.Month][date.Day] = parsedDayNum;
-                        }
-                    }
+                if (!_classBlockNumbersByDay[term][day].Contains(block))
+                {
+                    _classBlockNumbersByDay[term][day].Add(block);
                 }
             }
         }
-
-
-
     }
 }

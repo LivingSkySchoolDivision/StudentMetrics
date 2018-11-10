@@ -11,6 +11,9 @@ namespace LSKYStudentMetrics
         Unknown,
         Complete,
         Withdrawn,
-        Current
+        Current,
+        Incomplete,
+        NoMark,
+        StandingGranted
     }
 }

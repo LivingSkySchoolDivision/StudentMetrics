@@ -41,9 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\AbsenceListExtensions.cs" />
+    <Compile Include="Extensions\GenericListExtensions.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
-    <Compile Include="Helpers\Settings.cs" />
     <Compile Include="Model\Absence.cs" />
     <Compile Include="Model\AbsenceReason.cs" />
     <Compile Include="Model\AbsenceStatus.cs" />
@@ -56,16 +56,17 @@
     <Compile Include="Model\Exceptions\SyntaxException.cs" />
     <Compile Include="Model\GradeLevel.cs" />
     <Compile Include="Model\School.cs" />
-    <Compile Include="Model\SchoolClass.cs" />
-    <Compile Include="Model\SchoolClassSchedule.cs" />
+    <Compile Include="Model\SchoolLogicSpecific\SchoolClass.cs" />
+    <Compile Include="Model\SchoolLogicSpecific\SchoolClassSchedule.cs" />
     <Compile Include="Model\SchoolYear.cs" />
     <Compile Include="Model\Student.cs" />
-    <Compile Include="Model\StudentClassEnrolment.cs" />
+    <Compile Include="Model\SchoolLogicSpecific\StudentClassEnrolment.cs" />
     <Compile Include="Model\StudentExpectedAttendance.cs" />
+    <Compile Include="Model\StudentExpectedAttendanceEntry.cs" />
     <Compile Include="Model\StudentGradePlacement.cs" />
     <Compile Include="Model\StudentSchedule.cs" />
-    <Compile Include="Model\Term.cs" />
-    <Compile Include="Model\Track.cs" />
+    <Compile Include="Model\SchoolLogicSpecific\Term.cs" />
+    <Compile Include="Model\SchoolLogicSpecific\Track.cs" />
     <Compile Include="Model\TrackSchedule.cs" />
     <Compile Include="Model\UpdateCheck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,11 +84,14 @@
     <Compile Include="Repositories\SchoolLogic\SLAbsenceStatusRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLClassRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLClassScheduleRepository.cs" />
+    <Compile Include="Repositories\SchoolLogic\SLClassTermRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLGradeLevelRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLGradePlacementRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLSchoolRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLStudentClassEnrolmentRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLStudentRepository.cs" />
+    <Compile Include="Repositories\SchoolLogic\SLStudentScheduleRepository.cs" />
+    <Compile Include="Repositories\SchoolLogic\SLTermRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLTrackRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLTrackScheduleRepository.cs" />
   </ItemGroup>

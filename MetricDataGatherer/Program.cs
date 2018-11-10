@@ -61,13 +61,12 @@ namespace MetricDataGatherer
                     Log("Schools: \t\t" + configFile.SchoolPermissions.ToString());
                     Log("StudentGradePlacements: \t" + configFile.StudentGradePlacementPermissions.ToString());
                     Log("Students: \t\t" + configFile.StudentPermissions.ToString());
+                    Log("ExpectedAttendance: \t\t" + configFile.ExpectedAttendancePermissions.ToString());
 
 
                     LogDelegate logCallback = Log;
 
                     // Conduct the sync
-
-                    // Check to see if the school year specified in the config file is a valid one
 
                     // SCHOOLS
                     SchoolSync.Sync(configFile, configFile.SchoolPermissions.AllowAdds, configFile.SchoolPermissions.AllowUpdates, configFile.SchoolPermissions.AllowRemovals, configFile.SchoolPermissions.ForceUpdate, logCallback);
@@ -91,7 +90,7 @@ namespace MetricDataGatherer
                     AbsenceSync.Sync(configFile, configFile.AbsencePermissions.AllowAdds, configFile.AbsencePermissions.AllowUpdates, configFile.AbsencePermissions.AllowRemovals, configFile.AbsencePermissions.ForceUpdate, logCallback);
 
                     // STUDENT EXPECTED BLOCKS PER DAY
-                    StudentExpectedBlocksSync.Sync(configFile, logCallback);
+                    StudentExpectedBlocksSync.Sync(configFile, logCallback, schoolYear);
 
                 }
                 else
@@ -107,7 +106,7 @@ namespace MetricDataGatherer
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }
+            }// */
         }
 
         static void SendSyntax()

@@ -15,6 +15,7 @@ namespace LSKYStudentMetrics
         public DateTime Ends { get; set; }
         public bool isPeriod { get { return !isDaily; } }
         public TrackSchedule Schedule { get; set; }
+        public int DailyBlocksPerDay { get; set; }
         
     }
 }

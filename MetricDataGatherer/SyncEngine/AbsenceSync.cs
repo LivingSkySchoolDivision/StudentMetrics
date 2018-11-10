@@ -40,8 +40,8 @@ namespace MetricDataGatherer.SyncEngine
             int doneCount = 0;
             int totalExternalObjects = externalObjects.Count();
             decimal donePercent = 0;
-            decimal doneThresholdPercent = (decimal)0.1;
-            decimal doneThresholdIncrease = (decimal)0.1;
+            decimal doneThresholdPercent = (decimal)0.01;
+            decimal doneThresholdIncrease = (decimal)0.01;
             foreach (Absence externalObject in externalObjects)
             {
                 // Check to see if we know about this school already
@@ -67,6 +67,11 @@ namespace MetricDataGatherer.SyncEngine
                 {
                     doneThresholdPercent = doneThresholdPercent + doneThresholdIncrease;
                     Log((int)(donePercent*100) + "% finished inspecting objects");
+                }
+
+                if (doneCount == totalExternalObjects)
+                {
+                    Log("100% finished inspecting objects");
                 }
             }
 

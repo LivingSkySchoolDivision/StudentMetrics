@@ -69,6 +69,11 @@ namespace MetricDataGatherer.SyncEngine
                     doneThresholdPercent = doneThresholdPercent + doneThresholdIncrease;
                     Log((int)(donePercent * 100) + "% finished inspecting objects");
                 }
+
+                if (doneCount == totalExternalObjects)
+                {
+                    Log("100% finished inspecting objects");
+                }
             }
             
             Log("Found " + previouslyUnknown.Count() + " previously unknown");

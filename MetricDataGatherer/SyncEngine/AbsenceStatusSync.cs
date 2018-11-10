@@ -49,7 +49,7 @@ namespace MetricDataGatherer.SyncEngine
                 }
             }
 
-            // Find schools that are no longer in the database that could potentially be cleaned up
+            // Find objects that are no longer in the database that could potentially be cleaned up
             if (allowRemovals)
             {
                 List<int> foundIDs = externalRepository.GetAllIDs();

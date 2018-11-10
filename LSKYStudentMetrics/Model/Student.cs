@@ -8,6 +8,13 @@ namespace LSKYStudentMetrics
 {
     public class Student
     {
+        /* **************************************************************************** */
+        /* * DONT ADD HELPERS LIKE StudentSchedule or StudentExpectedAttendance here  * */
+        /* *                                                                          * */
+        /* * Those helpers are "side specific", and don't make sense to both sides    * */
+        /* * of the sync. Use a dictionary instead.                                   * */        
+        /* **************************************************************************** */
+
         public int iStudentID { get; set; }
         public string cStudentNumber { get; set; }
 
@@ -29,6 +36,11 @@ namespace LSKYStudentMetrics
             }
 
             return GradeLevel.Unknown;
+        }
+
+        public Student()
+        {
+            this.GradePlacements = new List<StudentGradePlacement>();
         }
 
 
@@ -56,6 +68,11 @@ namespace LSKYStudentMetrics
             {
                 return UpdateCheck.UpdatesRequired;
             }
+        }
+
+        public override string ToString()
+        {
+            return this.iStudentID + " (" + this.cStudentNumber + ")";
         }
     }
 }
