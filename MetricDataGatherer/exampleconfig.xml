@@ -10,42 +10,49 @@
   </Other>
   <AppPermissions>
     <Absences>
+      <AllowSync>True</AllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </Absences>
     <AbsenceReasons>
+      <AlllowSync>True</AlllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </AbsenceReasons>
     <AbsenceStatuses>
+      <AlllowSync>True</AlllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </AbsenceStatuses>
     <GradeLevels>
+      <AlllowSync>True</AlllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </GradeLevels>
     <Schools>
+      <AlllowSync>True</AlllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </Schools>
     <StudentGradePlacements>
+      <AlllowSync>True</AlllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </StudentGradePlacements>
     <Students>
+      <AlllowSync>True</AlllowSync>
       <AllowAdd>True</AllowAdd>
       <AllowUpdate>False</AllowUpdate>
       <AllowRemove>False</AllowRemove>

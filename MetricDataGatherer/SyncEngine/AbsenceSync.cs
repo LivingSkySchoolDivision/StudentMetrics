@@ -12,9 +12,16 @@ namespace MetricDataGatherer.SyncEngine
 {
     class AbsenceSync
     {
-        public static void Sync(ConfigFile configFile, bool allowAdds, bool allowUpdates, bool allowRemovals, bool forceUpdate, LogDelegate Log)
+        public static void Sync(ConfigFile configFile, LogDelegate Log)
         {
+            ConfigFileSyncPermissionsSection config = configFile.AbsencePermissions;
             Log("========= ABSENCES ========= ");
+            if (!config.AllowSync)
+            {
+                Log("This sync module is disabled in config file - skipping");
+                return;
+            }
+
             // Parse the school year from the config file, we'll need it later            
             InternalSchoolYearRepository _schoolYearRepo = new InternalSchoolYearRepository(configFile.DatabaseConnectionString_Internal);
             SchoolYear schoolYear = _schoolYearRepo.Get(configFile.SchoolYearName);
@@ -55,7 +62,7 @@ namespace MetricDataGatherer.SyncEngine
                 if (internalObject != null)
                 {
                     UpdateCheck check = internalObject.CheckIfUpdatesAreRequired(externalObject);
-                    if ((check == UpdateCheck.UpdatesRequired) || (forceUpdate))
+                    if ((check == UpdateCheck.UpdatesRequired) || (config.ForceUpdate))
                     {                        
                         needingUpdate.Add(externalObject);
                     }
@@ -76,7 +83,7 @@ namespace MetricDataGatherer.SyncEngine
             }
 
             // Find schools that are no longer in the database that could potentially be cleaned up
-            if (allowRemovals)
+            if (config.AllowRemovals)
             {
                 List<int> foundIDs = externalRepository.GetAllIDs();
                 foreach (Absence internalObject in internalObjects)
@@ -96,7 +103,7 @@ namespace MetricDataGatherer.SyncEngine
             
             if (previouslyUnknown.Count > 0)
             {
-                if (allowAdds)
+                if (config.AllowAdds)
                 {
                     Log(" > Adding " + previouslyUnknown.Count() + " new objects");
                     internalRepository.Add(previouslyUnknown);
@@ -110,7 +117,7 @@ namespace MetricDataGatherer.SyncEngine
             
             if (needingUpdate.Count > 0)
             {
-                if (allowUpdates)
+                if (config.AllowUpdates)
                 {
                     Log(" > Updating " + needingUpdate.Count() + " objects");
                     internalRepository.Update(needingUpdate);
@@ -122,7 +129,7 @@ namespace MetricDataGatherer.SyncEngine
 
             if (noLongerExistsInExternalSystem.Count > 0)
             {
-                if (allowRemovals)
+                if (config.AllowRemovals)
                 {
                     Log(" > If removals were implemented, we would remove " + noLongerExistsInExternalSystem.Count() + " objects here");
                 } else

@@ -54,13 +54,13 @@ namespace MetricDataGatherer
                     Log("Config file checks OK");
                     // Display information on what we're allowed to do based on the config file
                     Log("Permissions summary:");                    
-                    Log("Absences: \t\t" + configFile.AbsencePermissions.ToString());
-                    Log("AbsenceStatuses: \t" + configFile.AbsenceStatusPermissions.ToString());
+                    Log("Absences: \t\t\t" + configFile.AbsencePermissions.ToString());
+                    Log("AbsenceStatuses: \t\t" + configFile.AbsenceStatusPermissions.ToString());
                     Log("AbsenceReasons: \t\t" + configFile.AbsenceReasonPermissions.ToString());
-                    Log("GradeLevels: \t\t" + configFile.GradeLevelPermissions.ToString());
-                    Log("Schools: \t\t" + configFile.SchoolPermissions.ToString());
+                    Log("GradeLevels: \t\t\t" + configFile.GradeLevelPermissions.ToString());
+                    Log("Schools: \t\t\t" + configFile.SchoolPermissions.ToString());
                     Log("StudentGradePlacements: \t" + configFile.StudentGradePlacementPermissions.ToString());
-                    Log("Students: \t\t" + configFile.StudentPermissions.ToString());
+                    Log("Students: \t\t\t" + configFile.StudentPermissions.ToString());
                     Log("ExpectedAttendance: \t\t" + configFile.ExpectedAttendancePermissions.ToString());
 
 
@@ -69,28 +69,28 @@ namespace MetricDataGatherer
                     // Conduct the sync
 
                     // SCHOOLS
-                    SchoolSync.Sync(configFile, configFile.SchoolPermissions.AllowAdds, configFile.SchoolPermissions.AllowUpdates, configFile.SchoolPermissions.AllowRemovals, configFile.SchoolPermissions.ForceUpdate, logCallback);
+                    SchoolSync.Sync(configFile, logCallback);
 
                     // GRADE LEVELS
-                    GradeLevelSync.Sync(configFile, configFile.GradeLevelPermissions.AllowAdds, configFile.GradeLevelPermissions.AllowUpdates, configFile.GradeLevelPermissions.AllowRemovals, configFile.GradeLevelPermissions.ForceUpdate, logCallback);
+                    GradeLevelSync.Sync(configFile, logCallback);
 
                     // GRADE PLACEMENTS
-                    StudentGradePlacementSync.Sync(configFile, configFile.StudentGradePlacementPermissions.AllowAdds, configFile.StudentGradePlacementPermissions.AllowUpdates, configFile.StudentGradePlacementPermissions.AllowRemovals, configFile.StudentGradePlacementPermissions.ForceUpdate, logCallback);
+                    StudentGradePlacementSync.Sync(configFile, logCallback);
 
                     // STUDENTS
-                    StudentSync.Sync(configFile, configFile.StudentPermissions.AllowAdds, configFile.StudentPermissions.AllowUpdates, configFile.StudentPermissions.AllowRemovals, configFile.StudentPermissions.ForceUpdate, logCallback);
+                    StudentSync.Sync(configFile, logCallback);
 
                     // ABSENCE REASONS
-                    AbsenceReasonSync.Sync(configFile, configFile.AbsenceReasonPermissions.AllowAdds, configFile.AbsenceReasonPermissions.AllowUpdates, configFile.AbsenceReasonPermissions.AllowRemovals, configFile.AbsenceReasonPermissions.ForceUpdate, logCallback);
+                    AbsenceReasonSync.Sync(configFile, logCallback);
 
                     // ABSENCE STATUSES
-                    AbsenceStatusSync.Sync(configFile, configFile.AbsenceStatusPermissions.AllowAdds, configFile.AbsenceStatusPermissions.AllowUpdates, configFile.AbsenceStatusPermissions.AllowRemovals, configFile.AbsenceStatusPermissions.ForceUpdate, logCallback);
+                    AbsenceStatusSync.Sync(configFile, logCallback);
 
                     // Absences
-                    AbsenceSync.Sync(configFile, configFile.AbsencePermissions.AllowAdds, configFile.AbsencePermissions.AllowUpdates, configFile.AbsencePermissions.AllowRemovals, configFile.AbsencePermissions.ForceUpdate, logCallback);
+                    AbsenceSync.Sync(configFile, logCallback);
 
                     // STUDENT EXPECTED BLOCKS PER DAY
-                    StudentExpectedBlocksSync.Sync(configFile, logCallback, schoolYear);
+                    StudentExpectedBlocksSync.Sync(configFile, logCallback);
 
                 }
                 else

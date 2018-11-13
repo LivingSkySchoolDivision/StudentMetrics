@@ -1,5 +1,4 @@
 ﻿using LSKYStudentMetrics;
-using MetricDataGatherer.Config;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -103,6 +102,11 @@ namespace MetricDataGatherer
             // Loop through each setting in this section
             foreach (XElement setting in section.Elements())
             {
+                if (setting.Name == "AllowSync")
+                {
+                    returnMe.AllowSync = Parsers.ParseBool(setting.Value);
+                }
+
                 if (setting.Name == "AllowAdd")
                 {
                     returnMe.AllowAdds = Parsers.ParseBool(setting.Value);

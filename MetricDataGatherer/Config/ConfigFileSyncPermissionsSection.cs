@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MetricDataGatherer.Config
+namespace MetricDataGatherer
 {
     public class ConfigFileSyncPermissionsSection
     {
+        public bool AllowSync { get; set; }
         public bool AllowAdds { get; set; }
         public bool AllowUpdates { get; set; }
         public bool AllowRemovals { get; set; }
@@ -20,7 +21,7 @@ namespace MetricDataGatherer.Config
 
         public override string ToString()
         {
-            return "{ A[" + toX(this.AllowAdds) + "] U[" + toX(this.AllowUpdates) + "] R[" + toX(this.AllowRemovals) + "] F[" + toX(this.ForceUpdate) + "] }";
+            return "{ SYNC[" + toX(this.AllowSync) + "] ADD[" + toX(this.AllowAdds) + "] UPDATE[" + toX(this.AllowUpdates) + "] REMOVE[" + toX(this.AllowRemovals) + "] FORCE[" + toX(this.ForceUpdate) + "] }";
         }
     }
 }

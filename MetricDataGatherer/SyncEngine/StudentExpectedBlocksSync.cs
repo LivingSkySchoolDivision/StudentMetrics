@@ -12,15 +12,30 @@ namespace MetricDataGatherer.SyncEngine
 {
     class StudentExpectedBlocksSync
     {
-        public static void Sync(ConfigFile configFile, LogDelegate Log, SchoolYear schoolYear)
+        public static void Sync(ConfigFile configFile, LogDelegate Log)
         {
+            ConfigFileSyncPermissionsSection config = configFile.ExpectedAttendancePermissions;
+
             Log("========= EXPECTED ATTENDANCE ========= ");
+            if (!config.AllowSync)
+            {
+                Log("This sync module is disabled in config file - skipping");
+                return;
+            }
 
             // Load all students that have enrolled classes
             //  - a DISTINCT() on the enrollment table should do nicely here
 
             // Load all of those student's schedules
             // - Load each class's schedule, then combine into the student's own schedule
+
+            // Parse the school year from the config file, we'll need it later            
+            InternalSchoolYearRepository _schoolYearRepo = new InternalSchoolYearRepository(configFile.DatabaseConnectionString_Internal);
+            SchoolYear schoolYear = _schoolYearRepo.Get(configFile.SchoolYearName);
+            if (schoolYear == null)
+            {
+                throw new InvalidSchoolYearException("School year from config file is invalid");
+            }
 
             SLStudentRepository _studentRepo = new SLStudentRepository(configFile.DatabaseConnectionString_SchoolLogic);
             SLTrackRepository _trackRepo = new SLTrackRepository(configFile.DatabaseConnectionString_SchoolLogic);
@@ -109,9 +124,15 @@ namespace MetricDataGatherer.SyncEngine
             Log("Found " + externalObjects.Count() + " external objects");
 
             InternalStudentExpectedAttendanceRepository internalRepository = new InternalStudentExpectedAttendanceRepository(configFile.DatabaseConnectionString_Internal);
-            List<StudentExpectedAttendanceEntry> internalObjects = internalRepository.GetAllEntriesForYear(schoolYear.ID);
-            Log("Found " + internalObjects.Count() + " internal objects");
+                       
+            Log("Found " + internalRepository.TotalRecords(schoolYear.ID) + " internal objects");            
 
+            /* ************************************************************ */
+            // *
+            // * This took over 6 hours to do, so we need to make a more efficient way of doing this.
+            // * Perhaps the repository needs to store in a Dictionary<> mess instead of a single list
+            // *
+            /* ************************************************************ */
             // Compare for changes after here - all the above code was just loading stuff
             List<StudentExpectedAttendanceEntry> previouslyUnknown = new List<StudentExpectedAttendanceEntry>();
             List<StudentExpectedAttendanceEntry> needingUpdate = new List<StudentExpectedAttendanceEntry>();
@@ -120,8 +141,8 @@ namespace MetricDataGatherer.SyncEngine
             int doneCount = 0;
             int totalExternalObjects = externalObjects.Count();
             decimal donePercent = 0;
-            decimal doneThresholdPercent = (decimal)0.01;
-            decimal doneThresholdIncrease = (decimal)0.01;
+            decimal doneThresholdPercent = (decimal)0.1;
+            decimal doneThresholdIncrease = (decimal)0.1;
 
             foreach (StudentExpectedAttendanceEntry externalObject in externalObjects)
             {
@@ -136,7 +157,7 @@ namespace MetricDataGatherer.SyncEngine
                 if (internalObject != null)
                 {
                     UpdateCheck check = internalObject.CheckIfUpdatesAreRequired(externalObject);
-                    if ((check == UpdateCheck.UpdatesRequired) || (configFile.ExpectedAttendancePermissions.ForceUpdate))
+                    if ((check == UpdateCheck.UpdatesRequired) || (config.ForceUpdate))
                     {
                         needingUpdate.Add(externalObject);
                     }
@@ -162,7 +183,7 @@ namespace MetricDataGatherer.SyncEngine
             // Commit these changes to the database
             if (previouslyUnknown.Count > 0)
             {
-                if (configFile.ExpectedAttendancePermissions.AllowAdds)
+                if (config.AllowAdds)
                 {
                     Log(" > Adding " + previouslyUnknown.Count() + " new objects");
                     internalRepository.Add(previouslyUnknown);
@@ -177,7 +198,7 @@ namespace MetricDataGatherer.SyncEngine
 
             if (needingUpdate.Count > 0)
             {
-                if (configFile.ExpectedAttendancePermissions.AllowUpdates)
+                if (config.AllowUpdates)
                 {
                     Log(" > Updating " + needingUpdate.Count() + " objects");
                     internalRepository.Update(needingUpdate);
