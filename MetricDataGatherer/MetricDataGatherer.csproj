@@ -60,9 +60,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LSKYStudentMetrics\LSKYStudentMetrics.csproj">
+    <ProjectReference Include="..\LSKYStudentMetrics\LSSDMetricsLibrary.csproj">
       <Project>{9edd9b9f-ff05-49b9-8394-483968ba6c30}</Project>
-      <Name>LSKYStudentMetrics</Name>
+      <Name>LSSDMetricsLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

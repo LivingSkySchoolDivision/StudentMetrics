@@ -7,8 +7,8 @@
     <ProjectGuid>{9EDD9B9F-FF05-49B9-8394-483968BA6C30}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LSKYStudentMetrics</RootNamespace>
-    <AssemblyName>LSKYStudentMetrics</AssemblyName>
+    <RootNamespace>LSSDMetricsLibrary</RootNamespace>
+    <AssemblyName>LSSDMetricsLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

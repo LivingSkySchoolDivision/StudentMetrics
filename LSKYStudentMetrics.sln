@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSKYStudentMetrics", "LSKYStudentMetrics\LSKYStudentMetrics.csproj", "{9EDD9B9F-FF05-49B9-8394-483968BA6C30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSSDMetricsLibrary", "LSKYStudentMetrics\LSSDMetricsLibrary.csproj", "{9EDD9B9F-FF05-49B9-8394-483968BA6C30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricDataGatherer", "MetricDataGatherer\MetricDataGatherer.csproj", "{CC96AF6C-FFD0-4269-8FB9-9FA936B73F64}"
 EndProject
