@@ -25,7 +25,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
                 iSchoolID = Parsers.ParseInt(dataReader["iSchoolID"].ToString().Trim()),
                 iStudentID = Parsers.ParseInt(dataReader["iStudentID"].ToString().Trim()),
                 BlockNumber = Parsers.ParseInt(dataReader["iBlockNumber"].ToString().Trim()),
-                LateMinutes = Parsers.ParseDecimal(dataReader["iMinutes"].ToString().Trim()),
+                Minutes = Parsers.ParseDecimal(dataReader["iMinutes"].ToString().Trim()),
                 iClassID = Parsers.ParseInt(dataReader["iClassID"].ToString().Trim()),
                 iHomeRoomID = Parsers.ParseInt(dataReader["iClassID"].ToString().Trim()),
                 iReasonID = Parsers.ParseInt(dataReader["iReasonID"].ToString().Trim()),
@@ -261,7 +261,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
                             sqlCommand.Parameters.AddWithValue("LISABSENCE",0);
                             sqlCommand.Parameters.AddWithValue("LISDAILY",0);
                             sqlCommand.Parameters.AddWithValue("IBLOCKNUMBER",obj.BlockNumber);
-                            sqlCommand.Parameters.AddWithValue("IMINUTES",obj.LateMinutes);
+                            sqlCommand.Parameters.AddWithValue("IMINUTES",obj.Minutes);
                             sqlCommand.Parameters.AddWithValue("ICLASSID",obj.iClassID);
                             sqlCommand.Parameters.AddWithValue("IREASONID",obj.iReasonID);
                             sqlCommand.Parameters.AddWithValue("ISTATUSID",obj.iStatusID);
@@ -302,7 +302,7 @@ namespace LSKYStudentMetrics.Repositories.Internal
                             sqlCommand.Parameters.AddWithValue("LISABSENCE", 0);
                             sqlCommand.Parameters.AddWithValue("LISDAILY", 0);
                             sqlCommand.Parameters.AddWithValue("IBLOCKNUMBER", obj.BlockNumber);
-                            sqlCommand.Parameters.AddWithValue("IMINUTES", obj.LateMinutes);
+                            sqlCommand.Parameters.AddWithValue("IMINUTES", obj.Minutes);
                             sqlCommand.Parameters.AddWithValue("ICLASSID", obj.iClassID);
                             sqlCommand.Parameters.AddWithValue("IREASONID", obj.iReasonID);
                             sqlCommand.Parameters.AddWithValue("ISTATUSID", obj.iStatusID);

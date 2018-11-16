@@ -27,7 +27,7 @@ namespace LSKYStudentMetrics.Repositories.SchoolLogic
                 iSchoolID = Parsers.ParseInt(dataReader["iSchoolID"].ToString().Trim()),
                 iStudentID = Parsers.ParseInt(dataReader["iStudentID"].ToString().Trim()),
                 BlockNumber = Parsers.ParseInt(dataReader["iBlockNumber"].ToString().Trim()),
-                LateMinutes = Parsers.ParseDecimal(dataReader["iMinutes"].ToString().Trim()),
+                Minutes = Parsers.ParseDecimal(dataReader["iMinutes"].ToString().Trim()),
                 iClassID = Parsers.ParseInt(dataReader["iClassID"].ToString().Trim()),
                 iHomeRoomID = Parsers.ParseInt(dataReader["iClassID"].ToString().Trim()),
                 iReasonID = Parsers.ParseInt(dataReader["iAttendanceReasonsID"].ToString().Trim()),
