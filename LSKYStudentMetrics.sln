@@ -7,6 +7,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSSDMetricsLibrary", "LSKYS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricDataGatherer", "MetricDataGatherer\MetricDataGatherer.csproj", "{CC96AF6C-FFD0-4269-8FB9-9FA936B73F64}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "StudentMetricsWeb", "StudentMetricsWeb\", "{7B6E59A7-8B85-4804-AE22-A4AE04273290}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_63766"
+		Debug.AspNetCompiler.PhysicalPath = "StudentMetricsWeb\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_63766\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_63766"
+		Release.AspNetCompiler.PhysicalPath = "StudentMetricsWeb\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_63766\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "63766"
+		SlnRelativePath = "StudentMetricsWeb\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +43,10 @@ Global
 		{CC96AF6C-FFD0-4269-8FB9-9FA936B73F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC96AF6C-FFD0-4269-8FB9-9FA936B73F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC96AF6C-FFD0-4269-8FB9-9FA936B73F64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
