@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,7 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\AbsenceListExtensions.cs" />
+    <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\GenericListExtensions.cs" />
+    <Compile Include="GraphDataPoints\AverageAttendanceRateGraphDataPoint.cs" />
+    <Compile Include="Graphs\AverageAttendanceRateGraph.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
     <Compile Include="Model\Absence.cs" />

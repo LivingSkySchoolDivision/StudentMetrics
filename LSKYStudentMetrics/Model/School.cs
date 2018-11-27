@@ -12,6 +12,13 @@ namespace LSKYStudentMetrics
         public string GovernmentID { get; set; }
         public string Name { get; set; }
 
+        public string ShortName { get
+            {
+                return this.Name.Replace("High", "").Replace("School","").Replace("Elementary","");
+                
+            }
+        }
+
         /// <summary>
         /// Checks the "Old" object (this object) against a potentially new object (the object passed as a parameter) to see if the old one should be updated
         /// </summary>
