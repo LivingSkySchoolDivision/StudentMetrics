@@ -27,7 +27,8 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                 OutDate = Parsers.ParseDate(dataReader["OutDate"].ToString().Trim()),
                 OutsideTrackID = Parsers.ParseInt(dataReader["iOutsideTrackID"].ToString().Trim()),
                 InStatus = dataReader["InStatus"].ToString().Trim(),
-                OutStatus = dataReader["OutStatus"].ToString().Trim()
+                OutStatus = dataReader["OutStatus"].ToString().Trim(),
+                BaseSchoolEnrolment = Parsers.ParseBool(dataReader["BaseSchoolEnrolment"].ToString().Trim())
             };
         }
 
@@ -92,7 +93,72 @@ namespace LSSDMetricsLibrary.Repositories.Internal
         {
             return _cacheByID.Keys.ToList();
         }
-        
+
+        public List<int> GetStudentIDsEnrolledOn(DateTime thisDate, bool baseEnrollmentsOnly)
+        {
+            return GetStudentIDsEnrolledOn(thisDate, thisDate, baseEnrollmentsOnly);
+        }
+
+        public List<int> GetStudentIDsEnrolledOn(DateTime dateSpanStart, DateTime dateSpanEnd, bool baseEnrollmentsOnly)
+        {
+            List<int> returnMe = new List<int>();
+
+            foreach (StudentSchoolEnrolment sse in _cacheByID.Values)
+            {
+                if (!returnMe.Contains(sse.iStudentID))
+                {
+                    if ((dateSpanEnd >= sse.InDate) && ((dateSpanStart <= sse.OutDate) || (sse.OutDate.IsDatabaseNullDate())))
+                    {
+                        if (baseEnrollmentsOnly)
+                        {
+                            if (sse.BaseSchoolEnrolment)
+                            {
+                                returnMe.Add(sse.iStudentID);
+                            }
+                        }
+                        else
+                        {
+                            returnMe.Add(sse.iStudentID);
+                        }
+                    }
+                }
+            }
+            return returnMe;
+        }
+
+        public List<int> GetStudentIDsEnrolledOn(DateTime thisDate, int iSchoolID, bool baseEnrollmentsOnly)
+        {
+            return GetStudentIDsEnrolledOn(thisDate, thisDate, iSchoolID, baseEnrollmentsOnly);
+        }
+
+        public List<int> GetStudentIDsEnrolledOn(DateTime dateSpanStart, DateTime dateSpanEnd, int iSchoolID, bool baseEnrollmentsOnly)
+        {
+            List<int> returnMe = new List<int>();
+
+            foreach (StudentSchoolEnrolment sse in _cacheByID.Values.Where(x => x.iSchoolID == iSchoolID))
+            {
+                if (!returnMe.Contains(sse.iStudentID))
+                {
+                    if ((dateSpanEnd >= sse.InDate) && ((dateSpanStart <= sse.OutDate) || (sse.OutDate.IsDatabaseNullDate())))
+                    {
+                        if (baseEnrollmentsOnly)
+                        {
+                            if (sse.BaseSchoolEnrolment)
+                            {
+                                returnMe.Add(sse.iStudentID);
+                            }
+                        }
+                        else
+                        {
+                            returnMe.Add(sse.iStudentID);
+                        }
+                    }
+                }
+            }
+            return returnMe;
+        }
+
+
         public void Add(List<StudentSchoolEnrolment> objs)
         {
             // Add to database
@@ -107,7 +173,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                         sqlCommand.Connection.Open();
                         foreach (StudentSchoolEnrolment obj in objs)
                         {
-                            sqlCommand.CommandText = "INSERT INTO StudentSchoolEnrolments(enrolmentID,iStudentID,iSchoolID,InDate,OutDate,InStatus,OutStatus,iOutsideTrackID) VALUES(@EID,@STUDID,@SCHOOLID,@INDATE,@OUTDATE,@INSTATUS,@OUTSTATUS,@OUTTRACK)";
+                            sqlCommand.CommandText = "INSERT INTO StudentSchoolEnrolments(enrolmentID,iStudentID,iSchoolID,InDate,OutDate,InStatus,OutStatus,iOutsideTrackID,BaseSchoolEnrolment) VALUES(@EID,@STUDID,@SCHOOLID,@INDATE,@OUTDATE,@INSTATUS,@OUTSTATUS,@OUTTRACK,@ISBASE)";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("EID",obj.ID);
                             sqlCommand.Parameters.AddWithValue("STUDID",obj.iStudentID);
@@ -116,7 +182,8 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                             sqlCommand.Parameters.AddWithValue("OUTDATE",obj.OutDate.ToDatabaseSafeDate());
                             sqlCommand.Parameters.AddWithValue("INSTATUS",obj.InStatus);
                             sqlCommand.Parameters.AddWithValue("OUTSTATUS",obj.OutStatus);
-                            sqlCommand.Parameters.AddWithValue("OUTTRACK",obj.OutsideTrackID);
+                            sqlCommand.Parameters.AddWithValue("OUTTRACK", obj.OutsideTrackID);
+                            sqlCommand.Parameters.AddWithValue("ISBASE", obj.BaseSchoolEnrolment);
 
                             sqlCommand.ExecuteNonQuery();
                         }
@@ -144,7 +211,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                         sqlCommand.Connection.Open();
                         foreach (StudentSchoolEnrolment obj in objs)
                         {
-                            sqlCommand.CommandText = "UPDATE StudentSchoolEnrolments SET iStudentID=@STUDID, iSchoolID=@SCHOOLID, InDate=@INDATE, OutDate=@OUTDATE, InStatus=@INSTATUS, OutStatus=@OUTSTATUS, iOutsideTrackID=@OUTTRACK WHERE enrolmentID=@EID";
+                            sqlCommand.CommandText = "UPDATE StudentSchoolEnrolments SET iStudentID=@STUDID, iSchoolID=@SCHOOLID, BaseSChoolEnrolment=@ISBASE , InDate=@INDATE, OutDate=@OUTDATE, InStatus=@INSTATUS, OutStatus=@OUTSTATUS, iOutsideTrackID=@OUTTRACK WHERE enrolmentID=@EID";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("EID", obj.ID);
                             sqlCommand.Parameters.AddWithValue("STUDID", obj.iStudentID);
@@ -154,6 +221,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                             sqlCommand.Parameters.AddWithValue("INSTATUS", obj.InStatus);
                             sqlCommand.Parameters.AddWithValue("OUTSTATUS", obj.OutStatus);
                             sqlCommand.Parameters.AddWithValue("OUTTRACK", obj.OutsideTrackID);
+                            sqlCommand.Parameters.AddWithValue("ISBASE", obj.BaseSchoolEnrolment);
                             sqlCommand.ExecuteNonQuery();
                         }
                         sqlCommand.Connection.Close();

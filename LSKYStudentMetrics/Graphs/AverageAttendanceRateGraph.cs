@@ -17,31 +17,59 @@ namespace LSSDMetricsLibrary.Graphs
     public class AverageAttendanceRateGraph
     {
         Dictionary<School, AverageAttendanceRateGraphDataPoint> _graphDataPoints = new Dictionary<School, AverageAttendanceRateGraphDataPoint>();
-        
+
         public AverageAttendanceRateGraph(string InternalConnectionString, DateTime startDate, DateTime endDate)
         {
             // Load all schools
             InternalSchoolRepository _schoolRepo = new InternalSchoolRepository(InternalConnectionString);
             InternalStudentRepository _studentRepo = new InternalStudentRepository(InternalConnectionString);
-
+            InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
+            InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString);
 
             // Generate some data points
             foreach (School school in _schoolRepo.GetAll())
             {
-                _graphDataPoints.Add(school, new AverageAttendanceRateGraphDataPoint() { AttendanceRate = (float)0.8 });
+                // Load school students
+                List<Student> schoolStudents = _studentRepo.Get(_schoolStatusRepo.GetStudentIDsEnrolledOn(startDate, endDate, school.iSchoolID, true));
 
-                // Load all students that attended this school during the specified time
+                // Skip schools that have no students
+                if (schoolStudents.Count == 0)
+                {
+                    continue;
+                }
 
-                // I want to end up with an actual attendance rate VALUE for each student
-                // We COULD cut a corner here and add up total expected blocks for the whole school and compare that to the total 
-                // absences for the whole school, but we want to use the individual student attendance rates in a future graph
+                // Calculate each student's attendance rate for the given time period
+                // Throw out rates that are -1, because they are invalid
+                // Keep a running tally of all attendance rates, and of those from first nations students
+                List<decimal> attendanceRatesAllStudents = new List<decimal>();
+                List<decimal> attendanceRatesFNM = new List<decimal>();
+                
+                foreach (Student s in schoolStudents)
+                {
+                    StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID);
 
-                // StudentAttendanceRate(StudentSchedule, StudentAbsences)
-                //  StudentAttendanceRate.GetRateFor(DateTime from, DateTime to)
+                    decimal attendanceRate = sar.GetAttendanceRate(startDate, endDate);
+                    if (attendanceRate != -1)
+                    {
+                        attendanceRatesAllStudents.Add(attendanceRate);
+                        if (s.IsFirstNations)
+                        {
+                            attendanceRatesFNM.Add(attendanceRate);
+                        }
+                    }
+                }
 
-                //List<Student> schoolStudents = _studentRepo.GetForSchool(school, startDate, endDate);
+                if (attendanceRatesAllStudents.Count == 0)
+                {
+                    continue;
+                }
 
-                // Use "InternalStudentAttendanceRateRepository" to get attendance rates easily
+                // Average them all together and build the data point object for the graph
+                _graphDataPoints.Add(school, new AverageAttendanceRateGraphDataPoint()
+                {
+                    AttendanceRate = (attendanceRatesAllStudents.Count > 0) ? attendanceRatesAllStudents.Average() : -1,
+                    AttendanceRate_FNM = (attendanceRatesFNM.Count > 0) ? attendanceRatesFNM.Average() : -1
+                });
             }
         }
 

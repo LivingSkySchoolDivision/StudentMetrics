@@ -10,7 +10,7 @@ namespace LSSDMetricsLibrary.Repositories.SchoolLogic
 {
     public class SLStudentSchoolEnrolmentRepository
     {
-        private const string SelectSQL = "SELECT iStudentStatusID, iStudentID, StudentStatus.iSchoolID, dInDate, dOutDate, iOutside_TrackID, LVInStatus.cName as cInStatus, LVOutStatus.cName as cOutStatus FROM StudentStatus " +
+        private const string SelectSQL = "SELECT iStudentStatusID, iStudentID, StudentStatus.iSchoolID, dInDate, dOutDate, iOutside_TrackID, LVInStatus.cName as cInStatus, LVOutStatus.cName as cOutStatus, lOutsideStatus FROM StudentStatus " +
             "LEFT OUTER JOIN LookupValues as LVInStatus ON StudentStatus.iLV_InStatusValueID=LVInStatus.iLookupValuesID " +
             "LEFT OUTER JOIN LookupValues as LVOutStatus ON StudentStatus.iLV_OutStatusValueID=LVOutStatus.iLookupValuesID ";
         private string SQLConnectionString = string.Empty;
@@ -26,7 +26,8 @@ namespace LSSDMetricsLibrary.Repositories.SchoolLogic
                 OutDate = Parsers.ParseDate(dataReader["dOutDate"].ToString().Trim()),
                 OutsideTrackID = Parsers.ParseInt(dataReader["iOutside_TrackID"].ToString().Trim()),
                 InStatus = dataReader["cInStatus"].ToString().Trim(),
-                OutStatus = dataReader["cOutStatus"].ToString().Trim()
+                OutStatus = dataReader["cOutStatus"].ToString().Trim(),
+                BaseSchoolEnrolment = !Parsers.ParseBool(dataReader["lOutsideStatus"].ToString().Trim())
             };
         }
 

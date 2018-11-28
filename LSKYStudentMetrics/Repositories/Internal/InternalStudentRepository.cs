@@ -67,6 +67,19 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             _refreshCache();
         }
 
+        public List<Student> Get(List<int> iStudentIDs)
+        {
+            List<Student> returnMe = new List<Student>();
+            foreach(int id in iStudentIDs)
+            {
+                if (_cache.ContainsKey(id))
+                {
+                    returnMe.Add(_cache[id]);
+                }
+            }
+            return returnMe;
+        }
+
         public Student Get(int iStudentID)
         {
             if (_cache.ContainsKey(iStudentID))

@@ -16,41 +16,50 @@ public partial class Debug_Test : System.Web.UI.Page
 
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
-
-        int iStudentID = 10876; // 600003512 Mark Emmett Dumais @ Leoville Central School
+        int iSchoolID = 5850949; // Kerrobert
+        //int iStudentID = 10876; // 600003512 Mark Emmett Dumais @ Leoville Central School
         DateTime startDate = new DateTime(2018, 09, 04);
-        DateTime endDate = new DateTime(2018, 11, 27);
+        //DateTime endDate = new DateTime(2018, 11, 27);
+        DateTime endDate = startDate;
 
 
+        InternalSchoolRepository _schoolRepo = new InternalSchoolRepository(Config.dbConnectionString);
+        InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(Config.dbConnectionString);               
         InternalStudentRepository _studentRepo = new InternalStudentRepository(Config.dbConnectionString);
-        Student student = _studentRepo.Get(iStudentID);
-
-        Response.Write("<B>" + student.cStudentNumber + "</B><br>");
-
         InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(Config.dbConnectionString);
 
-        Response.Write("<BR><BR>Loaded-Repo-Elapsed: " + stopwatch.Elapsed);
-
-        StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(student.iStudentID);
-
-        Response.Write("<BR><BR>Loaded-Student-Elapsed: " + stopwatch.Elapsed);
-
-        Response.Write("<BR>Absences: " + sar.GetNumAbsences(startDate, endDate));
-        Response.Write("<BR>Expected: " + sar.GetExpectedAttendance(startDate, endDate));
-        Response.Write("<BR>Attendance Rate: " + sar.GetAttendanceRate(startDate, endDate));      
+        School school = _schoolRepo.Get(iSchoolID);
+        List<int> enrolledIDs = _schoolStatusRepo.GetStudentIDsEnrolledOn(startDate, true);
+        List<Student> allStudents = _studentRepo.Get(_schoolStatusRepo.GetStudentIDsEnrolledOn(startDate, true));
+        List<Student> schoolStudents = _studentRepo.Get(_schoolStatusRepo.GetStudentIDsEnrolledOn(startDate, iSchoolID, true));
 
 
+        Response.Write("<br>Total IDs: " + enrolledIDs.Count);
+        Response.Write("<br>Total Students: " + allStudents.Count);
+        Response.Write("<br>School: " + school.Name);
+        Response.Write("<br>School Students: " + schoolStudents.Count);
 
+        List<decimal> schoolAttendanceRates = new List<decimal>();
+
+
+        Response.Write("<table>");
+        Response.Write("<tr><td>Student Number</td><td>IsFirstNations</td><td>Expected</td><td>Absences</td><td>Rate</td></tr>");
+        foreach (Student s in schoolStudents)
+        {
+            StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID);
+            Response.Write("<tr>");
+            Response.Write("<td>" + s.cStudentNumber + "</td>");
+            Response.Write("<td>" + s.IsFirstNations + "</td>");
+            Response.Write("<td>" + sar.GetExpectedAttendance(startDate, endDate) + "</td>");
+            Response.Write("<td>" + sar.GetNumAbsences(startDate, endDate) + "</td>");
+            Response.Write("<td>" + sar.GetAttendanceRate(startDate, endDate) + "</td>");
+            Response.Write("</tr>");
+        }
+        Response.Write("</table>");        
+        
         stopwatch.Stop();
         Response.Write("<BR><BR>Elapsed: " + stopwatch.Elapsed);
         
         Response.Write("<BR>");
-
-        InternalAbsenceRepository absenceRepo = new InternalAbsenceRepository(Config.dbConnectionString);
-        foreach(Absence abs in absenceRepo.GetForStudent(iStudentID))
-        {
-            Response.Write("<BR>" + abs);
-        }
-
     }
 }

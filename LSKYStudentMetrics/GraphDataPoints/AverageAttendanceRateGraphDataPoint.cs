@@ -10,15 +10,15 @@ namespace LSSDMetricsLibrary.GraphDataPoints
     class AverageAttendanceRateGraphDataPoint : IComparable<AverageAttendanceRateGraphDataPoint>
     {
         public School School { get; set; }
-        public float AttendanceRate { get; set; }
+        public decimal AttendanceRate { get; set; }
 
-        public float AttendanceRate_FNM { get; set; }
+        public decimal AttendanceRate_FNM { get; set; }
 
         public string FriendlyAttendanceRate
         {
             get
             {
-                return (this.AttendanceRate * 100) + "%";
+                return (this.AttendanceRate * 100).ToString("0.##") + "%";
             }
         }
 
@@ -26,7 +26,7 @@ namespace LSSDMetricsLibrary.GraphDataPoints
         {
             get
             {
-                return (this.AttendanceRate_FNM * 100) + "%";
+                return (this.AttendanceRate_FNM * 100).ToString("0.##") + "%";
             }
         }
 

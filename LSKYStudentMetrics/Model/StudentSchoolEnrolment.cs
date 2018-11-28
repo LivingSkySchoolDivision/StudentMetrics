@@ -17,6 +17,7 @@ namespace LSSDMetricsLibrary
         public string InStatus { get; set; }
         public string OutStatus { get; set; }
         public int OutsideTrackID { get; set; }
+        public bool BaseSchoolEnrolment { get; set; }
 
         public UpdateCheck CheckIfUpdatesAreRequired(StudentSchoolEnrolment obj)
         {
@@ -36,6 +37,7 @@ namespace LSSDMetricsLibrary
             if (!this.InStatus.Equals(obj.InStatus)) { updates++; }
             if (!this.OutStatus.Equals(obj.OutStatus)) { updates++; }
             if (!this.OutsideTrackID.Equals(obj.OutsideTrackID)) { updates++; }
+            if (!this.BaseSchoolEnrolment.Equals(obj.BaseSchoolEnrolment)) { updates++; }
 
             if (updates == 0)
             {

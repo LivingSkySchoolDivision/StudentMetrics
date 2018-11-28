@@ -22,5 +22,21 @@ namespace LSSDMetricsLibrary
 
             return obj;
         }
+                
+        /// <summary>
+        /// Does this date represent a "null" date, as imported from a SQL database, where the datetime field was not set up as nullable?    
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsDatabaseNullDate(this DateTime obj)
+        {
+            // SchoolLogic uses 1900-01-01 as a null date
+            if (obj.Year < 1901)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
