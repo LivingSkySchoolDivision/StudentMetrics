@@ -58,5 +58,12 @@
       <AllowRemove>False</AllowRemove>
       <ForceUpdate>False</ForceUpdate>
     </Students>
+    <ExpectedAttendance>
+      <AllowSync>True</AllowSync>
+      <AllowAdd>True</AllowAdd>
+      <AllowUpdate>False</AllowUpdate>
+      <AllowRemove>False</AllowRemove>
+      <ForceUpdate>False</ForceUpdate>
+    </ExpectedAttendance>
   </AppPermissions>
 </Settings>
