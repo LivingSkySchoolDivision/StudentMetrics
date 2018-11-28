@@ -16,7 +16,6 @@ namespace LSSDMetricsLibrary
         // Dictionary<term ID, Dictionary<day number, List<block number>>>
         private Dictionary<int, Dictionary<int, List<int>>> _classBlockNumbersByDay = new Dictionary<int, Dictionary<int, List<int>>>();
         
-
         public SchoolClassSchedule(int iClassID)
         {
             this.iClassID = iClassID;

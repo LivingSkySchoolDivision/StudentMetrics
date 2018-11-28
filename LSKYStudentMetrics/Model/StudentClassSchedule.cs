@@ -17,7 +17,8 @@ namespace LSSDMetricsLibrary
             int returnMe = 0;
 
             // Get the schedule for all enrolled classes on the given day
-            foreach(StudentClassEnrolment sec in AllEnrolledClasses)
+            // Make sure the student is actually enrolled in the class at this time
+            foreach(StudentClassEnrolment sec in AllEnrolledClasses.Where(x => (x.InDate <= date) && ((x.OutDate >= date) || (x.OutDate < new DateTime(1901,1,1)))))
             {
                 returnMe += sec.Class.Schedule.GetBlocksScheduledOn(date).Count();
             }
