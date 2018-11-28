@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSSDMetricsLibrary
 {
     public class Absence
     {
@@ -22,6 +22,40 @@ namespace LSKYStudentMetrics
         public int iStatusID { get; set; }
         public int iStaffID { get; set; }
         public int iSchoolYearID { get; set; }
+
+        public bool CountsAgainstAttendanceRate {
+            get
+            {
+                if (this.Status?.Content.ToLower() == "absent")
+                {
+                    if (this.Reason == null)
+                    {
+                        return true;
+                    }
+
+                    if (this.Reason.Content == string.Empty)
+                    {
+                        return true;
+                    }
+
+                    if (this.Reason?.Content.ToLower() == "known reason")
+                    {
+                        return true;
+                    }
+
+                    if (this.Reason?.Content.ToLower() == "medical")
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public override string ToString()
+        {
+            return "{ABSENCE DATE:" + this.Date.ToShortDateString() + " STATUS:" + this.Status + " REASON:" + this.Reason + " COUNTS:" + this.CountsAgainstAttendanceRate + "}";
+        }
 
         public UpdateCheck CheckIfUpdatesAreRequired(Absence obj)
         {

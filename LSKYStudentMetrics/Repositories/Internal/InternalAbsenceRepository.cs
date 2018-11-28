@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics.Repositories.Internal
+namespace LSSDMetricsLibrary.Repositories.Internal
 {
     public class InternalAbsenceRepository
     {
@@ -237,6 +237,44 @@ namespace LSKYStudentMetrics.Repositories.Internal
             return returnMe;
         }
 
+
+        public List<Absence> GetForStudent(int iStudentID)
+        {
+            List<Absence> returnMe = new List<Absence>();
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            {
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE iStudentID=@STUDID";
+                        sqlCommand.Parameters.AddWithValue("STUDID", iStudentID);
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Absence parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
+                                {
+                                    returnMe.Add(parsedObject);
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidConnectionStringException("Connection string is empty");
+            }
+            return returnMe;
+        }
+
         public void Add(List<Absence> objs)
         {
             // Add to database
@@ -251,15 +289,13 @@ namespace LSKYStudentMetrics.Repositories.Internal
                         sqlCommand.Connection.Open();
                         foreach (Absence obj in objs)
                         {
-                            sqlCommand.CommandText = "INSERT INTO Attendance(iSchoolYearID,iAbsenceID,dDate,iSchoolID,iStudentID,lIsAbsence,lIsDaily,iBlockNumber,iMinutes,iClassID,iReasonID,iStatusID,iStaffID) VALUES(@ISCHOOLYEARID,@IABSENCEID,@DDATE,@ISCHOOLID,@ISTUDENTID,@LISABSENCE,@LISDAILY,@IBLOCKNUMBER,@IMINUTES,@ICLASSID,@IREASONID,@ISTATUSID,@ISTAFFID)";
+                            sqlCommand.CommandText = "INSERT INTO Attendance(iSchoolYearID,iAbsenceID,dDate,iSchoolID,iStudentID,iBlockNumber,iMinutes,iClassID,iReasonID,iStatusID,iStaffID) VALUES(@ISCHOOLYEARID,@IABSENCEID,@DDATE,@ISCHOOLID,@ISTUDENTID,@IBLOCKNUMBER,@IMINUTES,@ICLASSID,@IREASONID,@ISTATUSID,@ISTAFFID)";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("ISCHOOLYEARID",obj.iSchoolYearID);
                             sqlCommand.Parameters.AddWithValue("IABSENCEID",obj.ID);
                             sqlCommand.Parameters.AddWithValue("DDATE",obj.Date);
                             sqlCommand.Parameters.AddWithValue("ISCHOOLID",obj.iSchoolID);
                             sqlCommand.Parameters.AddWithValue("ISTUDENTID",obj.iStudentID);
-                            sqlCommand.Parameters.AddWithValue("LISABSENCE",0);
-                            sqlCommand.Parameters.AddWithValue("LISDAILY",0);
                             sqlCommand.Parameters.AddWithValue("IBLOCKNUMBER",obj.BlockNumber);
                             sqlCommand.Parameters.AddWithValue("IMINUTES",obj.Minutes);
                             sqlCommand.Parameters.AddWithValue("ICLASSID",obj.iClassID);
@@ -292,15 +328,13 @@ namespace LSKYStudentMetrics.Repositories.Internal
                         sqlCommand.Connection.Open();
                         foreach (Absence obj in objs)
                         {
-                            sqlCommand.CommandText = "UPDATE Attendance SET iSchoolYearID=@ISCHOOLYEARID, dDate=@DDATE, iSchoolID=@ISCHOOLID, iStudentID=@ISTUDENTID, lIsAbsence=@LISABSENCE, lIsDaily=@LISDAILY, iBlockNumber=@IBLOCKNUMBER, iMinutes=@IMINUTES, iClassID=@ICLASSID, iReasonID=@IREASONID, iStatusID=@ISTATUSID, iStaffID=@ISTAFFID WHERE iAbsenceID=@IABSENCEID";
+                            sqlCommand.CommandText = "UPDATE Attendance SET iSchoolYearID=@ISCHOOLYEARID, dDate=@DDATE, iSchoolID=@ISCHOOLID, iStudentID=@ISTUDENTID, iBlockNumber=@IBLOCKNUMBER, iMinutes=@IMINUTES, iClassID=@ICLASSID, iReasonID=@IREASONID, iStatusID=@ISTATUSID, iStaffID=@ISTAFFID WHERE iAbsenceID=@IABSENCEID";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("ISCHOOLYEARID", obj.iSchoolYearID);
                             sqlCommand.Parameters.AddWithValue("IABSENCEID", obj.ID);
                             sqlCommand.Parameters.AddWithValue("DDATE", obj.Date);
                             sqlCommand.Parameters.AddWithValue("ISCHOOLID", obj.iSchoolID);
                             sqlCommand.Parameters.AddWithValue("ISTUDENTID", obj.iStudentID);
-                            sqlCommand.Parameters.AddWithValue("LISABSENCE", 0);
-                            sqlCommand.Parameters.AddWithValue("LISDAILY", 0);
                             sqlCommand.Parameters.AddWithValue("IBLOCKNUMBER", obj.BlockNumber);
                             sqlCommand.Parameters.AddWithValue("IMINUTES", obj.Minutes);
                             sqlCommand.Parameters.AddWithValue("ICLASSID", obj.iClassID);

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics.Repositories.Internal
+namespace LSSDMetricsLibrary.Repositories.Internal
 {
     public class InternalSchoolRepository
     {

@@ -1,11 +1,11 @@
-﻿using LSKYStudentMetrics.Extensions;
+﻿using LSSDMetricsLibrary.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSSDMetricsLibrary
 {
     public class SchoolClassSchedule
     {
@@ -16,7 +16,6 @@ namespace LSKYStudentMetrics
         // Dictionary<term ID, Dictionary<day number, List<block number>>>
         private Dictionary<int, Dictionary<int, List<int>>> _classBlockNumbersByDay = new Dictionary<int, Dictionary<int, List<int>>>();
         
-
         public SchoolClassSchedule(int iClassID)
         {
             this.iClassID = iClassID;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSSDMetricsLibrary
 {
     public static class Parsers
     {
@@ -162,6 +162,27 @@ namespace LSKYStudentMetrics
         public static List<int> ParseInt(List<string> numbers)
         {
             return numbers.Select(Parsers.ParseInt).ToList();
+        }
+
+        public static IEnumerable<DateTime> GetEachDayBetween(DateTime dateFrom, DateTime dateTo)
+        {
+            // Just get the date, delete the time
+            DateTime from = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, 0, 0, 0);
+            DateTime to = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, 0, 0, 0);
+
+            // Dates need to be in chronological order, so reverse them if necesary
+            if (dateFrom > dateTo)
+            {
+                to = dateFrom;
+                @from = dateTo;
+            }
+
+            List<DateTime> returnMe = new List<DateTime>();
+            for (DateTime day = @from.Date; day.Date <= to.Date; day = day.AddDays(1))
+            {
+                returnMe.Add(day);
+            }
+            return returnMe;
         }
     }
 }

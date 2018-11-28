@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics.Repositories.Internal
+namespace LSSDMetricsLibrary.Repositories.Internal
 {
     public class InternalStudentExpectedAttendanceRepository
     {
@@ -193,7 +193,6 @@ namespace LSKYStudentMetrics.Repositories.Internal
 
         public void Add(List<StudentExpectedAttendanceEntry> objs)
         {
-
             // Add to database
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
             {

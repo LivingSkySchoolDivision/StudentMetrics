@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics.Repositories.SchoolLogic
+namespace LSSDMetricsLibrary.Repositories.SchoolLogic
 {
     public class SLAbsenceStatusRepository
     {

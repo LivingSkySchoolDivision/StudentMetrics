@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSSDMetricsLibrary
 {
     public class StudentExpectedAttendance
     {
@@ -32,8 +32,7 @@ namespace LSKYStudentMetrics
                 this.Add(entry);
             }
             this.iStudentID = iStudentID;
-        }
-              
+        }              
 
         public StudentExpectedAttendance(int iStudentID, List<StudentExpectedAttendanceEntry> expectedAttendanceEntries)
         {
@@ -70,38 +69,7 @@ namespace LSKYStudentMetrics
 
             return 0;
         }
-
-        /*
-        public void Add(StudentExpectedAttendance additionalAttendance)
-        {
-            foreach (int year in additionalAttendance._attendanceArray.Keys)
-            {
-                if (!this._attendanceArray.ContainsKey(year))
-                {
-                    this._attendanceArray.Add(year, new Dictionary<int, Dictionary<int, int>>());
-                }
-
-                foreach (int month in additionalAttendance._attendanceArray[year].Keys)
-                {
-                    if (!this._attendanceArray[year].ContainsKey(month))
-                    {
-                        this._attendanceArray[year].Add(month, new Dictionary<int, int>());
-                    }
-
-                    foreach (int day in additionalAttendance._attendanceArray[year][month].Keys)
-                    {
-                        if (!this._attendanceArray[year][month].ContainsKey(day))
-                        {
-                            this._attendanceArray[year][month].Add(day, 0);
-                        }
-
-                        this._attendanceArray[year][month][day] = additionalAttendance._attendanceArray[year][month][day];
-                    }
-                }
-            }
-        }
-        */
-
+        
         public void Add(StudentExpectedAttendanceEntry entry)
         {
             if (entry.iStudentID == this.iStudentID)

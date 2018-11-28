@@ -1,6 +1,6 @@
-﻿using LSKYStudentMetrics;
-using LSKYStudentMetrics.Repositories.SchoolLogic;
-using LSKYStudentMetrics.Repositories.Internal;
+﻿using LSSDMetricsLibrary;
+using LSSDMetricsLibrary.Repositories.SchoolLogic;
+using LSSDMetricsLibrary.Repositories.Internal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
