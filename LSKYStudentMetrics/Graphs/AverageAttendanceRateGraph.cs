@@ -1,5 +1,5 @@
-﻿using LSKYStudentMetrics;
-using LSKYStudentMetrics.Repositories.Internal;
+﻿using LSSDMetricsLibrary;
+using LSSDMetricsLibrary.Repositories.Internal;
 using LSSDMetricsLibrary.GraphDataPoints;
 using System;
 using System.Collections.Generic;
@@ -40,6 +40,8 @@ namespace LSSDMetricsLibrary.Graphs
                 //  StudentAttendanceRate.GetRateFor(DateTime from, DateTime to)
 
                 //List<Student> schoolStudents = _studentRepo.GetForSchool(school, startDate, endDate);
+
+                // Use "InternalStudentAttendanceRateRepository" to get attendance rates easily
             }
         }
 

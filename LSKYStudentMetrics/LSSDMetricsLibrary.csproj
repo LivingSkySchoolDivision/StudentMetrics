@@ -48,6 +48,8 @@
     <Compile Include="Graphs\AverageAttendanceRateGraph.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
+    <Compile Include="Helpers\StudentAbsenceHelper.cs" />
+    <Compile Include="Helpers\StudentAttendanceRate.cs" />
     <Compile Include="Model\Absence.cs" />
     <Compile Include="Model\AbsenceReason.cs" />
     <Compile Include="Model\AbsenceStatus.cs" />
@@ -68,7 +70,7 @@
     <Compile Include="Model\StudentExpectedAttendance.cs" />
     <Compile Include="Model\StudentExpectedAttendanceEntry.cs" />
     <Compile Include="Model\StudentGradePlacement.cs" />
-    <Compile Include="Model\StudentSchedule.cs" />
+    <Compile Include="Model\StudentClassSchedule.cs" />
     <Compile Include="Model\SchoolLogicSpecific\Term.cs" />
     <Compile Include="Model\SchoolLogicSpecific\Track.cs" />
     <Compile Include="Model\TrackSchedule.cs" />
@@ -81,8 +83,10 @@
     <Compile Include="Repositories\Internal\InternalGradePlacementRepository.cs" />
     <Compile Include="Repositories\Internal\InternalSchoolRepository.cs" />
     <Compile Include="Repositories\Internal\InternalSchoolYearRepository.cs" />
+    <Compile Include="Repositories\Internal\InternalStudentAttendanceRateRepository.cs" />
     <Compile Include="Repositories\Internal\InternalStudentExpectedAttendanceRepository.cs" />
     <Compile Include="Repositories\Internal\InternalStudentRepository.cs" />
+    <Compile Include="Repositories\Internal\StudentAbsenceHelperRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceReasonRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceStatusRepository.cs" />

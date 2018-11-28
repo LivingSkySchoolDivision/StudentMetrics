@@ -1,11 +1,11 @@
-﻿using LSKYStudentMetrics.Extensions;
+﻿using LSSDMetricsLibrary.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSSDMetricsLibrary
 {
     public class SchoolClassSchedule
     {

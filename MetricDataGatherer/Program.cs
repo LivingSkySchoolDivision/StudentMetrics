@@ -1,12 +1,12 @@
-﻿using LSKYStudentMetrics;
+﻿using LSSDMetricsLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LSKYStudentMetrics.Repositories;
-using LSKYStudentMetrics.Repositories.SchoolLogic;
-using LSKYStudentMetrics.Repositories.Internal;
+using LSSDMetricsLibrary.Repositories;
+using LSSDMetricsLibrary.Repositories.SchoolLogic;
+using LSSDMetricsLibrary.Repositories.Internal;
 using MetricDataGatherer.SyncEngine;
 
 namespace MetricDataGatherer

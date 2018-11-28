@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics.Extensions
+namespace LSSDMetricsLibrary.Extensions
 {
     public static class AbsenceListExtensions
     {

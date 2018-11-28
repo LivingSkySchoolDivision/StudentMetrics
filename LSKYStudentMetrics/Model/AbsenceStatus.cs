@@ -4,12 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics
+namespace LSSDMetricsLibrary
 {
     public class AbsenceStatus
     {
         public int ID { get; set; }
         public string Content { get; set; }
+
+        public override string ToString()
+        {
+            return this.Content;
+        }
 
         public UpdateCheck CheckIfUpdatesAreRequired(AbsenceStatus obj)
         {

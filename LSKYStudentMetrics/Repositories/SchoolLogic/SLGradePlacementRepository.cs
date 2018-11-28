@@ -1,4 +1,4 @@
-﻿using LSKYStudentMetrics.Repositories.Internal;
+﻿using LSSDMetricsLibrary.Repositories.Internal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSKYStudentMetrics.Repositories.SchoolLogic
+namespace LSSDMetricsLibrary.Repositories.SchoolLogic
 {
     // This repository will only ever work for a single school year, unlike the internal one
     // so, it's structure is going to be different from it's internal counterpart
