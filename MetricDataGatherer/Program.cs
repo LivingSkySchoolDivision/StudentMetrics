@@ -62,6 +62,7 @@ namespace MetricDataGatherer
                     Log("StudentGradePlacements: \t" + configFile.StudentGradePlacementPermissions.ToString());
                     Log("Students: \t\t\t" + configFile.StudentPermissions.ToString());
                     Log("ExpectedAttendance: \t\t" + configFile.ExpectedAttendancePermissions.ToString());
+                    Log("StudentSchoolEnrolments: \t\t" + configFile.StudentSchoolEnrolmentPermissions.ToString());
 
 
                     LogDelegate logCallback = Log;
@@ -91,6 +92,9 @@ namespace MetricDataGatherer
 
                     // STUDENT EXPECTED BLOCKS PER DAY
                     StudentExpectedBlocksSync.Sync(configFile, logCallback);
+
+                    // Student school enrolments
+                    StudentSchoolEnrolmentSync.Sync(configFile, logCallback);
 
                 }
                 else

@@ -46,27 +46,16 @@ namespace LSSDMetricsLibrary
             }
             return 0;
         }
+             
 
         public static DateTime ParseDate(string thisDate)
         {
-            // Check if we were given the "null" date value from a SQL database, and return the C# minvalue instead
-            if (thisDate.Trim() == "1900-01-01 00:00:00.000")
-            {
-                return DateTime.MinValue;
-            }
-
             DateTime returnMe = DateTime.MinValue;
 
             if (!DateTime.TryParse(thisDate, out returnMe))
             {
                 returnMe = DateTime.MinValue;
-            }
-
-            // Again, check if we've managed to parse the SQL's minimum date and convert it
-            if (returnMe == new DateTime(1900, 1, 1))
-            {
-                returnMe = DateTime.MinValue;
-            }
+            }          
 
             return returnMe;
         }

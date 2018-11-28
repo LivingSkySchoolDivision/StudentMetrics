@@ -54,6 +54,7 @@
     <Compile Include="SyncEngine\SchoolSync.cs" />
     <Compile Include="SyncEngine\StudentExpectedBlocksSync.cs" />
     <Compile Include="SyncEngine\StudentGradePlacementSync.cs" />
+    <Compile Include="SyncEngine\StudentSchoolEnrolmentSync.cs" />
     <Compile Include="SyncEngine\StudentSync.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -103,7 +103,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                             sqlCommand.Parameters.AddWithValue("ISTUDENTID", student.iStudentID);
                             sqlCommand.Parameters.AddWithValue("STUDENTNUM", student.cStudentNumber);
                             sqlCommand.Parameters.AddWithValue("FIRSTNATIONS", student.IsFirstNations);
-                            sqlCommand.Parameters.AddWithValue("DATEOFBIRTH", student.DateOfBirth);
+                            sqlCommand.Parameters.AddWithValue("DATEOFBIRTH", student.DateOfBirth.ToDatabaseSafeDate());
                             sqlCommand.Parameters.AddWithValue("GENDER", student.Gender);                            
                             sqlCommand.ExecuteNonQuery();
                             
@@ -140,7 +140,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                             sqlCommand.Parameters.AddWithValue("ISTUDENTID", student.iStudentID);
                             sqlCommand.Parameters.AddWithValue("STUDENTNUM", student.cStudentNumber);
                             sqlCommand.Parameters.AddWithValue("FIRSTNATIONS", student.IsFirstNations);
-                            sqlCommand.Parameters.AddWithValue("DATEOFBIRTH", student.DateOfBirth);
+                            sqlCommand.Parameters.AddWithValue("DATEOFBIRTH", student.DateOfBirth.ToDatabaseSafeDate());
                             sqlCommand.Parameters.AddWithValue("GENDER", student.Gender);                            
                             sqlCommand.ExecuteNonQuery();                            
                         }

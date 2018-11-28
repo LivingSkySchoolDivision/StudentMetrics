@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSSDMetricsLibrary.Extensions
+namespace LSSDMetricsLibrary
 {
     public static class  BitmapExtensions
     {

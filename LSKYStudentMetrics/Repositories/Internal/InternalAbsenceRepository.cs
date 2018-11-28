@@ -293,7 +293,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("ISCHOOLYEARID",obj.iSchoolYearID);
                             sqlCommand.Parameters.AddWithValue("IABSENCEID",obj.ID);
-                            sqlCommand.Parameters.AddWithValue("DDATE",obj.Date);
+                            sqlCommand.Parameters.AddWithValue("DDATE",obj.Date.ToDatabaseSafeDate());
                             sqlCommand.Parameters.AddWithValue("ISCHOOLID",obj.iSchoolID);
                             sqlCommand.Parameters.AddWithValue("ISTUDENTID",obj.iStudentID);
                             sqlCommand.Parameters.AddWithValue("IBLOCKNUMBER",obj.BlockNumber);
@@ -332,7 +332,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("ISCHOOLYEARID", obj.iSchoolYearID);
                             sqlCommand.Parameters.AddWithValue("IABSENCEID", obj.ID);
-                            sqlCommand.Parameters.AddWithValue("DDATE", obj.Date);
+                            sqlCommand.Parameters.AddWithValue("DDATE", obj.Date.ToDatabaseSafeDate());
                             sqlCommand.Parameters.AddWithValue("ISCHOOLID", obj.iSchoolID);
                             sqlCommand.Parameters.AddWithValue("ISTUDENTID", obj.iStudentID);
                             sqlCommand.Parameters.AddWithValue("IBLOCKNUMBER", obj.BlockNumber);

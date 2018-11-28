@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Extensions\AbsenceListExtensions.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\GenericListExtensions.cs" />
     <Compile Include="GraphDataPoints\AverageAttendanceRateGraphDataPoint.cs" />
     <Compile Include="Graphs\AverageAttendanceRateGraph.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Model\StudentClassSchedule.cs" />
     <Compile Include="Model\SchoolLogicSpecific\Term.cs" />
     <Compile Include="Model\SchoolLogicSpecific\Track.cs" />
+    <Compile Include="Model\StudentSchoolEnrolment.cs" />
     <Compile Include="Model\TrackSchedule.cs" />
     <Compile Include="Model\UpdateCheck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,6 +88,7 @@
     <Compile Include="Repositories\Internal\InternalStudentAttendanceRateRepository.cs" />
     <Compile Include="Repositories\Internal\InternalStudentExpectedAttendanceRepository.cs" />
     <Compile Include="Repositories\Internal\InternalStudentRepository.cs" />
+    <Compile Include="Repositories\Internal\InternalStudentSchoolEnrolmentRepository.cs" />
     <Compile Include="Repositories\Internal\StudentAbsenceHelperRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceReasonRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLAbsenceRepository.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Repositories\SchoolLogic\SLStudentClassEnrolmentRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLStudentRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLStudentScheduleRepository.cs" />
+    <Compile Include="Repositories\SchoolLogic\SLStudentSchoolEnrolmentRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLTermRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLTrackRepository.cs" />
     <Compile Include="Repositories\SchoolLogic\SLTrackScheduleRepository.cs" />
