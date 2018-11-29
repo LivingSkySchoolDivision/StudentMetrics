@@ -46,7 +46,7 @@ namespace LSSDMetricsLibrary.Graphs
                 
                 foreach (Student s in schoolStudents)
                 {
-                    StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID);
+                    StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID, startDate, endDate);
 
                     decimal attendanceRate = sar.GetAttendanceRate(startDate, endDate);
                     if (attendanceRate != -1)

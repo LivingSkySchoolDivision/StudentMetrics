@@ -125,7 +125,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
         /// Gets all absences from the internal database. This can take a very long time.
         /// </summary>
         /// <returns></returns>
-        [Obsolete("You should use a more specific version of GetAll, or your operation will take a long time.")]
+        [Obsolete("This will take a very long time. Consider getting a specific date range instead.")]
         public List<Absence> GetAll()
         {
             List<Absence> returnMe = new List<Absence>();
@@ -236,9 +236,8 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             }
             return returnMe;
         }
-
-
-        public List<Absence> GetForStudent(int iStudentID)
+        
+        public List<Absence> GetForStudent(int iStudentID, DateTime startDate, DateTime endDate)
         {
             List<Absence> returnMe = new List<Absence>();
             if (!string.IsNullOrEmpty(this.SQLConnectionString))
@@ -249,8 +248,10 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                     {
                         sqlCommand.Connection = connection;
                         sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE iStudentID=@STUDID";
+                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE iStudentID=@STUDID AND dDate>=@STARTDATE AND dDate<=@ENDDATE";
                         sqlCommand.Parameters.AddWithValue("STUDID", iStudentID);
+                        sqlCommand.Parameters.AddWithValue("STARTDATE", startDate);
+                        sqlCommand.Parameters.AddWithValue("ENDDATE", endDate);
                         sqlCommand.Connection.Open();
                         SqlDataReader dataReader = sqlCommand.ExecuteReader();
                         if (dataReader.HasRows)

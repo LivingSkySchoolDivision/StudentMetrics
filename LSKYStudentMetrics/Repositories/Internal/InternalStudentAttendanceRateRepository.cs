@@ -18,12 +18,12 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             this._studentAbsenceHelperRepo = new StudentAbsenceHelperRepository(SQLConnectionString);
         }
 
-        public StudentAttendanceRate GetForStudent(int iStudentID)
+        public StudentAttendanceRate GetForStudent(int iStudentID, DateTime startDate, DateTime endDate)
         {
             return new StudentAttendanceRate(iStudentID)
             {
-                ExpectedAttendance = _expectedAttendanceRepo.GetForStudent(iStudentID),
-                Absences = _studentAbsenceHelperRepo.GetForStudent(iStudentID)
+                ExpectedAttendance = _expectedAttendanceRepo.GetForStudent(iStudentID, startDate, endDate),
+                Absences = _studentAbsenceHelperRepo.GetForStudent(iStudentID, startDate, endDate)
             };
         }
     }

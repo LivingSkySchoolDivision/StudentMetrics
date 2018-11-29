@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace LSSDMetricsLibrary
 {
+    /// <summary>
+    /// This represents a single student's expected attendance
+    /// </summary>
     public class StudentExpectedAttendance
     {
         public int iStudentID { get; set; }
+        public DateTime EarliestDate { get; set; }
+        public DateTime LatestDate { get; set; }
 
         // Dictionary<year, Dictionary<month, Dictionary<day, blocks>>>
         private Dictionary<int, Dictionary<int, Dictionary<int, int>>> _attendanceArray { get; set; }
@@ -76,24 +81,24 @@ namespace LSSDMetricsLibrary
             {
                 if (entry.BlocksToday > 0)
                 {
-                    if (!this._attendanceArray.ContainsKey(entry.Year))
+                    if (!this._attendanceArray.ContainsKey(entry.Date.Year))
                     {
-                        this._attendanceArray.Add(entry.Year, new Dictionary<int, Dictionary<int, int>>());
+                        this._attendanceArray.Add(entry.Date.Year, new Dictionary<int, Dictionary<int, int>>());
                     }
 
-                    if (!this._attendanceArray[entry.Year].ContainsKey(entry.Month))
+                    if (!this._attendanceArray[entry.Date.Year].ContainsKey(entry.Date.Month))
                     {
-                        this._attendanceArray[entry.Year].Add(entry.Month, new Dictionary<int, int>());
+                        this._attendanceArray[entry.Date.Year].Add(entry.Date.Month, new Dictionary<int, int>());
                     }
 
-                    if (!this._attendanceArray[entry.Year][entry.Month].ContainsKey(entry.Day))
+                    if (!this._attendanceArray[entry.Date.Year][entry.Date.Month].ContainsKey(entry.Date.Day))
                     {
-                        this._attendanceArray[entry.Year][entry.Month].Add(entry.Day, 0);
+                        this._attendanceArray[entry.Date.Year][entry.Date.Month].Add(entry.Date.Day, 0);
                     }
 
-                    if (this._attendanceArray[entry.Year][entry.Month][entry.Day] < entry.BlocksToday)
+                    if (this._attendanceArray[entry.Date.Year][entry.Date.Month][entry.Date.Day] < entry.BlocksToday)
                     {
-                        this._attendanceArray[entry.Year][entry.Month][entry.Day] += entry.BlocksToday;
+                        this._attendanceArray[entry.Date.Year][entry.Date.Month][entry.Date.Day] += entry.BlocksToday;
                     }
                 }
             } else

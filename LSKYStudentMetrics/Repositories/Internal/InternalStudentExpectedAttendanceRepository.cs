@@ -10,34 +10,87 @@ namespace LSSDMetricsLibrary.Repositories.Internal
 {
     public class InternalStudentExpectedAttendanceRepository
     {
-        private const string _selectSQL = "SELECT * FROM StudentExpectedBlocksPerDay";
         private string SQLConnectionString = string.Empty;
 
         //List<StudentExpectedAttendanceEntry> _allEntriesCache = new List<StudentExpectedAttendanceEntry>();
-          
-        // This is going to be ugly, but it needs to be fast
-        // School year, year, month, day, studentID, blockstoday
-        Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, int>>>>> _cache = new Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, int>>>>>();
-        Dictionary<int, int> _countsBySchoolYear = new Dictionary<int, int>();
-        
-        private int _totalRecords = 0;
-
-        public int TotalRecords()
-        {
-            return _totalRecords;
-        }
-
-        public int TotalRecords(int iSchoolYear)
-        {
-            return _countsBySchoolYear.ContainsKey(iSchoolYear) ? _countsBySchoolYear[iSchoolYear] : 0;
-        }
-
-        public InternalStudentExpectedAttendanceRepository(string SQLConnectionString) : this(SQLConnectionString, 0) { }
-
-        public InternalStudentExpectedAttendanceRepository(string SQLConnectionString, int iSchoolYearID)
+                         
+        public InternalStudentExpectedAttendanceRepository(string SQLConnectionString)
         {
             this.SQLConnectionString = SQLConnectionString;
-            _totalRecords = 0;
+        }       
+               
+        public StudentExpectedAttendance GetForStudent(int iStudentID, DateTime startDate, DateTime endDate)
+        {
+            return new StudentExpectedAttendance(iStudentID, GetEntriesForStudent(iStudentID, startDate, endDate));
+        }
+
+        public int RecordCount(int iSchoolYearID)
+        {
+            int returnMe = 0;
+            using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand())
+                {
+                    sqlCommand.Connection = connection;
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.CommandText = "SELECT COUNT(*) as num FROM StudentExpectedBlocksPerDay WHERE iSchoolYearID=@SYID";
+                    sqlCommand.Parameters.AddWithValue("SYID", iSchoolYearID);
+                    sqlCommand.Connection.Open();
+                    SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            returnMe = Parsers.ParseInt(dataReader["num"].ToString());
+                        }
+                    }
+                    sqlCommand.Connection.Close();
+                }
+            }
+            return returnMe;
+        }
+
+        public int RecordCount()
+        {
+            int returnMe = 0;
+            using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand())
+                {
+                    sqlCommand.Connection = connection;
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.CommandText = "SELECT COUNT(*) as num FROM StudentExpectedBlocksPerDay";
+                    sqlCommand.Connection.Open();
+                    SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            returnMe = Parsers.ParseInt(dataReader["num"].ToString());
+                        }
+                    }
+                    sqlCommand.Connection.Close();
+                }
+            }
+            return returnMe;
+        }
+
+        public StudentExpectedAttendanceEntry Get(int iStudentID, int iSchoolYearID, CalendarDay day)
+        {
+            return Get(iStudentID, iSchoolYearID, (DateTime)day);
+        }
+
+        // Yes this is horrific, but it's fast... I hope
+        // Dictionary<SchoolYear, Dictionary<Year, Dictionary<Month, Dictionary<Day, Dicionary<Student, Entry
+        Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, StudentExpectedAttendanceEntry>>>>> _cache = new Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, StudentExpectedAttendanceEntry>>>>>();
+
+        private void loadCacheForSchoolYear(int iSchoolYearID)
+        {
+            if (_cache.ContainsKey(iSchoolYearID))
+            {
+                _cache.Remove(iSchoolYearID);                
+            }
+            _cache.Add(iSchoolYearID, new Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, StudentExpectedAttendanceEntry>>>>());
             
             using (SqlConnection connection = new SqlConnection(SQLConnectionString))
             {
@@ -45,22 +98,39 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                 {
                     sqlCommand.Connection = connection;
                     sqlCommand.CommandType = CommandType.Text;
-                    if (iSchoolYearID == 0)
-                    {
-                        sqlCommand.CommandText = _selectSQL;
-                    } else
-                    {
-                        sqlCommand.CommandText = _selectSQL + " WHERE iSchoolYearID=@SYID";
-                        sqlCommand.Parameters.Clear();
-                        sqlCommand.Parameters.AddWithValue("SYID", iSchoolYearID);
-                    }
+                    sqlCommand.CommandText = "SELECT * FROM StudentExpectedBlocksPerDay WHERE iSchoolYearID=@SYID";
+                    sqlCommand.Parameters.AddWithValue("SYID", iSchoolYearID);
+
                     sqlCommand.Connection.Open();
                     SqlDataReader dataReader = sqlCommand.ExecuteReader();
                     if (dataReader.HasRows)
                     {
                         while (dataReader.Read())
                         {
-                            addToCache(dataReader);                            
+                            StudentExpectedAttendanceEntry o = dataReaderToObject(dataReader);
+                            if (o != null)
+                            {
+                                // Insert into the cache
+                                if (!_cache[iSchoolYearID].ContainsKey(o.Date.Year))
+                                {
+                                    _cache[iSchoolYearID].Add(o.Date.Year, new Dictionary<int, Dictionary<int, Dictionary<int, StudentExpectedAttendanceEntry>>>());
+                                }
+
+                                if (!_cache[iSchoolYearID][o.Date.Year].ContainsKey(o.Date.Month))
+                                {
+                                    _cache[iSchoolYearID][o.Date.Year].Add(o.Date.Month, new Dictionary<int, Dictionary<int, StudentExpectedAttendanceEntry>>());
+                                }
+
+                                if (!_cache[iSchoolYearID][o.Date.Year][o.Date.Month].ContainsKey(o.Date.Day))
+                                {
+                                    _cache[iSchoolYearID][o.Date.Year][o.Date.Month].Add(o.Date.Day, new Dictionary<int, StudentExpectedAttendanceEntry>());
+                                }
+
+                                if (!_cache[iSchoolYearID][o.Date.Year][o.Date.Month][o.Date.Day].ContainsKey(o.iStudentID))
+                                {
+                                    _cache[iSchoolYearID][o.Date.Year][o.Date.Month][o.Date.Day].Add(o.iStudentID, o);
+                                }
+                            }
                         }
                     }
                     sqlCommand.Connection.Close();
@@ -68,128 +138,81 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             }
         }
 
-        private void addToCache(SqlDataReader dataReader)
+        public StudentExpectedAttendanceEntry Get(int iStudentID, int iSchoolYearID, DateTime day)
         {
-            int _iStudentID = Parsers.ParseInt(dataReader["iStudentID"].ToString());
-            int _iSchoolYearID = Parsers.ParseInt(dataReader["iSchoolYearID"].ToString());
-            int _year = Parsers.ParseInt(dataReader["iYear"].ToString());
-            int _month = Parsers.ParseInt(dataReader["iMonthNumber"].ToString());
-            int _day = Parsers.ParseInt(dataReader["iDay"].ToString());
-            int _blocksToday = Parsers.ParseInt(dataReader["iBlocksToday"].ToString());
+            // Do some fancy caching magic here
+            // We are probably only Getting an individual entry if we're performing a sync, where we'll need the entire school year
 
-            addToCache(_iSchoolYearID, _year, _month, _day, _iStudentID, _blocksToday);            
-        }
+            // If the cache for the given school year is not yet loaded, load it
 
-        private void addToCache(StudentExpectedAttendanceEntry entry)
-        {   
-            addToCache(entry.iSchoolYearID, entry.Year, entry.Month, entry.Day, entry.iStudentID, entry.BlocksToday);
-        }
+            // Do the rest of the checking and getting from the cache
 
-        private void addToCache(int schoolYear, int year, int month, int day, int studentID, int blocksPerDay)
-        {
-            if ((studentID != 0) && (schoolYear != 0) && (year != 0) && (month != 0) && (day != 0) && (blocksPerDay != 0))
+            if (!_cache.ContainsKey(iSchoolYearID))
             {
-                // School Year ID
-                if (!_cache.ContainsKey(schoolYear))
-                {
-                    _cache.Add(schoolYear, new Dictionary<int, Dictionary<int, Dictionary<int, Dictionary<int, int>>>>());
-                }
-
-                // Year
-                if (!_cache[schoolYear].ContainsKey(year))
-                {
-                    _cache[schoolYear].Add(year, new Dictionary<int, Dictionary<int, Dictionary<int, int>>>());
-                }
-
-                // Month
-                if (!_cache[schoolYear][year].ContainsKey(month))
-                {
-                    _cache[schoolYear][year].Add(month, new Dictionary<int, Dictionary<int, int>>());
-                }
-
-                // Day
-                if (!_cache[schoolYear][year][month].ContainsKey(day))
-                {
-                    _cache[schoolYear][year][month].Add(day, new Dictionary<int, int>());
-                }
-
-                // Student ID
-                if (!_cache[schoolYear][year][month][day].ContainsKey(studentID))
-                {
-                    _cache[schoolYear][year][month][day].Add(studentID, 0);
-                }
-
-                _cache[schoolYear][year][month][day][studentID] = blocksPerDay;
-                _totalRecords++;
-
-                if (!_countsBySchoolYear.ContainsKey(schoolYear))
-                {
-                    _countsBySchoolYear.Add(schoolYear, 0);
-                }
-                _countsBySchoolYear[schoolYear]++;
+                loadCacheForSchoolYear(iSchoolYearID);
             }
-        }
-        
-        public StudentExpectedAttendance GetForStudent(int iStudentID)
-        {
-            return new StudentExpectedAttendance(iStudentID, GetEntriesFor(iStudentID));
-        }
 
-                
-        public StudentExpectedAttendanceEntry Get(int iStudentID, int iSchoolYearID, int iYear, int iMonth, int iDay)
-        {
-            int bpd = 0;
+            // Brute force it, for speed
             try
             {
-                bpd = _cache?[iSchoolYearID]?[iYear]?[iMonth]?[iDay]?[iStudentID] ?? 0;
+                return _cache[iSchoolYearID][day.Year][day.Month][day.Day][iStudentID];
             }
             catch { }
 
-            // To keep things consistent with other repositories, return null instead of zero here
-            if (bpd == 0) return null;
-
-            return new StudentExpectedAttendanceEntry()
-            {
-                iStudentID = iStudentID,
-                iSchoolYearID = iSchoolYearID,
-                Year = iYear,
-                Month = iMonth,
-                Day = iDay,
-                BlocksToday = bpd
-            };            
+            return null;
         }
 
-        public List<StudentExpectedAttendanceEntry> GetEntriesFor(int iStudentID)
+        public StudentExpectedAttendanceEntry Get(int iStudentID, int iSchoolYearID, int iYear, int iMonth, int iDay)
+        {
+            return Get(iStudentID, iSchoolYearID, new DateTime(iYear, iMonth, iDay));
+        }
+
+        private StudentExpectedAttendanceEntry dataReaderToObject(SqlDataReader dataReader)
+        {
+            return new StudentExpectedAttendanceEntry()
+            {
+                iStudentID = Parsers.ParseInt(dataReader["iStudentID"].ToString()),
+                iSchoolYearID = Parsers.ParseInt(dataReader["iSchoolYearID"].ToString()),
+                BlocksToday = Parsers.ParseInt(dataReader["iBlocksToday"].ToString()),
+                Date = Parsers.ParseDate(dataReader["dDate"].ToString())
+            };
+        }
+
+        public List<StudentExpectedAttendanceEntry> GetEntriesForStudent(int iStudentID, DateTime startDate, DateTime endDate)
         {
             List<StudentExpectedAttendanceEntry> returnMe = new List<StudentExpectedAttendanceEntry>();
 
-            foreach (int schoolYear in _cache.Keys)
+            using (SqlConnection connection = new SqlConnection(SQLConnectionString))
             {
-                foreach(int year in _cache[schoolYear].Keys)
+                using (SqlCommand sqlCommand = new SqlCommand())
                 {
-                    foreach (int month in _cache[schoolYear][year].Keys)
+                    sqlCommand.Connection = connection;
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.CommandText = "SELECT * FROM StudentExpectedBlocksPerDay WHERE iStudentID=@STUDID AND dDate>=@STARTDATE AND dDate<=@ENDDATE";
+                    sqlCommand.Parameters.AddWithValue("STARTDATE", startDate);
+                    sqlCommand.Parameters.AddWithValue("ENDDATE", endDate);
+                    sqlCommand.Parameters.AddWithValue("STUDID", iStudentID);
+                    sqlCommand.Connection.Open();
+                    SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                    if (dataReader.HasRows)
                     {
-                        foreach(int day in _cache[schoolYear][year][month].Keys)
+                        while (dataReader.Read())
                         {
-                            if (_cache[schoolYear][year][month][day].ContainsKey(iStudentID))
+                            StudentExpectedAttendanceEntry parsedObject = dataReaderToObject(dataReader);
+                            if (parsedObject != null)
                             {
-                                returnMe.Add(new StudentExpectedAttendanceEntry()
-                                {
-                                    iStudentID = iStudentID,
-                                    iSchoolYearID = schoolYear,
-                                    Year = year,
-                                    Month = month,
-                                    Day = day,
-                                    BlocksToday = _cache[schoolYear][year][month][day][iStudentID]
-                                });
+                                returnMe.Add(parsedObject);
                             }
                         }
                     }
+                    sqlCommand.Connection.Close();
                 }
             }
 
             return returnMe;
         }
+
+
 
         public void Add(List<StudentExpectedAttendanceEntry> objs)
         {
@@ -205,19 +228,16 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                         sqlCommand.Connection.Open();
                         foreach (StudentExpectedAttendanceEntry obj in objs)
                         {
-                            sqlCommand.CommandText = "INSERT INTO StudentExpectedBlocksPerDay(iStudentID, iSchoolYearID, iYear, iMonthNumber, iDay, iBlocksToday) VALUES(@STUDID, @SCHOOLYEAR, @YEARNUM, @MONTHNUM, @DAYNUM, @BLOCKSTODAY)";
+                            sqlCommand.CommandText = "INSERT INTO StudentExpectedBlocksPerDay(iStudentID, iSchoolYearID, iBlocksToday, dDate, iYear, iMonthNumber, iDay) VALUES(@STUDID, @SCHOOLYEAR, @BLOCKSTODAY, @DDATE, @IYEAR, @IMONTH, @IDAY)";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("STUDID", obj.iStudentID);
                             sqlCommand.Parameters.AddWithValue("SCHOOLYEAR", obj.iSchoolYearID);
-                            sqlCommand.Parameters.AddWithValue("YEARNUM", obj.Year);
-                            sqlCommand.Parameters.AddWithValue("MONTHNUM", obj.Month);
-                            sqlCommand.Parameters.AddWithValue("DAYNUM", obj.Day);
                             sqlCommand.Parameters.AddWithValue("BLOCKSTODAY", obj.BlocksToday);
+                            sqlCommand.Parameters.AddWithValue("DDATE", obj.Date);
+                            sqlCommand.Parameters.AddWithValue("IYEAR", obj.Date.Year);
+                            sqlCommand.Parameters.AddWithValue("IMONTH", obj.Date.Month);
+                            sqlCommand.Parameters.AddWithValue("IDAY", obj.Date.Day);
                             sqlCommand.ExecuteNonQuery();
-
-
-                            // Also add to the internal cache
-                            addToCache(obj);
                         }
                         sqlCommand.Connection.Close();
                     }
@@ -243,14 +263,12 @@ namespace LSSDMetricsLibrary.Repositories.Internal
                         sqlCommand.Connection.Open();
                         foreach (StudentExpectedAttendanceEntry obj in objs)
                         {
-                            sqlCommand.CommandText = "UPDATE StudentExpectedBlocksPerDay SET iBlocksToday=@BLOCKSTODAY WHERE iStudentID=@STUDID AND iSchoolYearID=@SCHOOLYEAR AND iYear=@YEARNUM AND iMonthNumber=@MONTHNUM AND iDay=@DAYNUM";
+                            sqlCommand.CommandText = "UPDATE StudentExpectedBlocksPerDay SET iBlocksToday=@BLOCKSTODAY WHERE iStudentID=@STUDID AND iSchoolYearID=@SCHOOLYEAR AND dDate=@DDATE";
                             sqlCommand.Parameters.Clear();
                             sqlCommand.Parameters.AddWithValue("STUDID", obj.iStudentID);
                             sqlCommand.Parameters.AddWithValue("SCHOOLYEAR", obj.iSchoolYearID);
-                            sqlCommand.Parameters.AddWithValue("YEARNUM", obj.Year);
-                            sqlCommand.Parameters.AddWithValue("MONTHNUM", obj.Month);
-                            sqlCommand.Parameters.AddWithValue("DAYNUM", obj.Day);
                             sqlCommand.Parameters.AddWithValue("BLOCKSTODAY", obj.BlocksToday);
+                            sqlCommand.Parameters.AddWithValue("DDATE", obj.Date);
                             sqlCommand.ExecuteNonQuery();
                         }
                         sqlCommand.Connection.Close();
@@ -261,9 +279,6 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             {
                 throw new InvalidConnectionStringException("Connection string is empty");
             }
-
-
         }
-
     }
 }

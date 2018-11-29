@@ -58,7 +58,7 @@ public partial class Debug_Test : System.Web.UI.Page
             Response.Write("<BR>" + stopwatch.Elapsed + ": > Start attendance rate collection for all students");
             foreach (Student s in schoolStudents)
             {
-                StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID);
+                StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID, startDate, endDate);
 
                 decimal attendanceRate = sar.GetAttendanceRate(startDate, endDate);
                 if (attendanceRate != -1)
