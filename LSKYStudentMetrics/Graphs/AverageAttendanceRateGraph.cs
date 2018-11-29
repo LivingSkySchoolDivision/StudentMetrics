@@ -17,9 +17,13 @@ namespace LSSDMetricsLibrary.Graphs
     public class AverageAttendanceRateGraph
     {
         Dictionary<School, AverageAttendanceRateGraphDataPoint> _graphDataPoints = new Dictionary<School, AverageAttendanceRateGraphDataPoint>();
+        private string chartTitle = string.Empty;
+        private string chartSubTitle = string.Empty;
 
-        public AverageAttendanceRateGraph(string InternalConnectionString, DateTime startDate, DateTime endDate)
+        public AverageAttendanceRateGraph(string InternalConnectionString, DateTime startDate, DateTime endDate, string ChartTitle)
         {
+            chartTitle = ChartTitle;
+            chartSubTitle = startDate.ToShortDateString() + " to " + endDate.ToShortDateString();
             // Load all schools
             InternalSchoolRepository _schoolRepo = new InternalSchoolRepository(InternalConnectionString);
             InternalStudentRepository _studentRepo = new InternalStudentRepository(InternalConnectionString);
@@ -78,8 +82,11 @@ namespace LSSDMetricsLibrary.Graphs
             MemoryStream returnedBytes = new MemoryStream();
             Bitmap bitmap = new Bitmap(width, height);
             Graphics graphics = Graphics.FromImage(bitmap);
+            Font font_title = new Font("Arial", 16, FontStyle.Bold);
+            Font font_subtitle = new Font("Arial", 12, FontStyle.Bold);
             Font font_Label = new Font("Arial", 12, FontStyle.Bold);
             Brush labelBrush = new SolidBrush(Color.FromArgb(255, 0, 0, 0));
+            Brush titleBrush = new SolidBrush(Color.FromArgb(255, 0, 0, 0));
             Brush barBrush = new SolidBrush(Color.FromArgb(255, 49, 55, 115));
             Brush barValueBrush = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
             Font barValueFont = new Font("Arial", 10, FontStyle.Bold);
@@ -89,13 +96,14 @@ namespace LSSDMetricsLibrary.Graphs
             // Fiddly variables
             int barPadding = 4;
             int labelPadding_Left = 0;
-            int spacing_labelAndGraph = 10;   
+            int spacing_labelAndGraph = 10;
+            int titleSpace = 50;
 
             // variables that will fiddle themselves out later
             int dataPointHeight = 0;
             float largestLabelHeight = 0;
             float largestLabelWidth = 0;
-            int thisBarStartY = 0;
+            int thisBarStartY = titleSpace;
             float graphStartX = 0;
             int totalUsedImageHight = height;
             int totalUsedImageWidth = width;
@@ -104,7 +112,7 @@ namespace LSSDMetricsLibrary.Graphs
 
             // Set a background colour
             graphics.Clear(Color.White);
-
+            
             // Calculate the label width max
             foreach (School school in this._graphDataPoints.Keys)
             {
@@ -121,20 +129,25 @@ namespace LSSDMetricsLibrary.Graphs
             }
             dataPointHeight = (int)largestLabelHeight + barPadding;
             barHeight = dataPointHeight * (float)0.75;
-
-
+            
             graphStartX = largestLabelWidth + spacing_labelAndGraph;
             barMaxWidth = width - (int)graphStartX;
-            thisBarStartY = 0;
+
+            // Chart title
+            graphics.DrawString(chartTitle, font_title, titleBrush, width/2, 0, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            graphics.DrawString(chartSubTitle, font_subtitle, titleBrush, width/2, 25, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            
+
+            // Chart data
             foreach (School school in this._graphDataPoints.Keys.OrderBy(x => _graphDataPoints[x]))
             {
                 float thisBarVerticalMiddle = thisBarStartY + (dataPointHeight / 2);
                 float thisBarWidth = barMaxWidth * (float)(_graphDataPoints[school].AttendanceRate); // This should be the actual width of the bar
-
+                
                 // Draw a separating line
                 //graphics.DrawLine(feintLinePen, new Point(0, (int)thisBarVerticalMiddle), new Point(width, (int)thisBarVerticalMiddle));
                 //graphics.DrawLine(feintLinePen, new Point(0, (int)thisBarStartY), new Point(width, (int)thisBarStartY));
-                graphics.DrawLine(feintLinePen, new Point(0, (int)thisBarStartY), new Point((int)graphStartX, (int)thisBarStartY));
+                //graphics.DrawLine(feintLinePen, new Point(0, (int)thisBarStartY), new Point((int)graphStartX, (int)thisBarStartY));
 
                 // Draw the label
                 //graphics.DrawString(school.ShortName, font_Label, labelBrush, labelPadding_Left, thisBarVerticalMiddle, new StringFormat() { LineAlignment = StringAlignment.Center });
@@ -150,7 +163,7 @@ namespace LSSDMetricsLibrary.Graphs
             totalUsedImageHight = thisBarStartY;
 
             // Add the line that starts the graph
-            graphics.DrawLine(graphAxisPen, new Point((int)graphStartX, 0), new Point((int)graphStartX, thisBarStartY));
+            graphics.DrawLine(graphAxisPen, new Point((int)graphStartX, titleSpace), new Point((int)graphStartX, thisBarStartY));
 
             // Resize the bitmap
             bitmap.Crop(totalUsedImageWidth, totalUsedImageHight).Save(returnedBytes, ImageFormat.Png);
