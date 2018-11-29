@@ -67,9 +67,7 @@ namespace MetricDataGatherer.SyncEngine
                             {
                                 iStudentID = student.iStudentID,
                                 iSchoolYearID = schoolYear.ID,
-                                Year = day.Year,
-                                Month = day.Month,
-                                Day = day.Day,
+                                Date = day,
                                 BlocksToday = track.DailyBlocksPerDay
                             });
                         }
@@ -110,9 +108,7 @@ namespace MetricDataGatherer.SyncEngine
                                 {
                                     iStudentID = student.iStudentID,
                                     iSchoolYearID = schoolYear.ID,
-                                    Year = day.Year,
-                                    Month = day.Month,
-                                    Day = day.Day,
+                                    Date = day,
                                     BlocksToday = blocksToday
                                 });
                             }  
@@ -125,7 +121,7 @@ namespace MetricDataGatherer.SyncEngine
 
             InternalStudentExpectedAttendanceRepository internalRepository = new InternalStudentExpectedAttendanceRepository(configFile.DatabaseConnectionString_Internal);
                        
-            Log("Found " + internalRepository.TotalRecords(schoolYear.ID) + " internal objects");            
+            Log("Found " + internalRepository.RecordCount(schoolYear.ID) + " internal objects");            
 
             /* ************************************************************ */
             // *
@@ -147,7 +143,7 @@ namespace MetricDataGatherer.SyncEngine
             foreach (StudentExpectedAttendanceEntry externalObject in externalObjects)
             {
                 // Check to see if we know about this object already
-                StudentExpectedAttendanceEntry internalObject = internalRepository.Get(externalObject.iStudentID, externalObject.iSchoolYearID, externalObject.Year, externalObject.Month, externalObject.Day);
+                StudentExpectedAttendanceEntry internalObject = internalRepository.Get(externalObject.iStudentID, externalObject.iSchoolYearID, externalObject.Date.Year, externalObject.Date.Month, externalObject.Date.Day);
                 if (internalObject == null)
                 {
                     previouslyUnknown.Add(externalObject);

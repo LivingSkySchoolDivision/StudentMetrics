@@ -25,6 +25,7 @@ namespace MetricDataGatherer
         public ConfigFileSyncPermissionsSection StudentGradePlacementPermissions { get; set; }
         public ConfigFileSyncPermissionsSection StudentPermissions { get; set; }
         public ConfigFileSyncPermissionsSection ExpectedAttendancePermissions { get; set; }
+        public ConfigFileSyncPermissionsSection StudentSchoolEnrolmentPermissions { get; set; }
 
         public ConfigFile()
         {
@@ -125,7 +126,8 @@ namespace MetricDataGatherer
                 if (setting.Name == "ForceUpdate")
                 {
                     returnMe.ForceUpdate = Parsers.ParseBool(setting.Value);
-                }
+                }                
+
             }
 
             return returnMe;
@@ -150,6 +152,7 @@ namespace MetricDataGatherer
             ConfigFileSyncPermissionsSection _studentGradePlacementPermissions = new ConfigFileSyncPermissionsSection();
             ConfigFileSyncPermissionsSection _studentPermissions = new ConfigFileSyncPermissionsSection();
             ConfigFileSyncPermissionsSection _expectedAttendancePermissions = new ConfigFileSyncPermissionsSection();
+            ConfigFileSyncPermissionsSection _studentschoolenrolmentpermissions = new ConfigFileSyncPermissionsSection();
 
             // Load the file into XElement
             XElement configFile = XElement.Load(FileName);
@@ -189,6 +192,7 @@ namespace MetricDataGatherer
                     if (section.Name == "StudentGradePlacements") { _studentGradePlacementPermissions = parseSyncPermissionSection(section); }
                     if (section.Name == "Students") { _studentPermissions = parseSyncPermissionSection(section); }
                     if (section.Name == "ExpectedAttendance") { _expectedAttendancePermissions = parseSyncPermissionSection(section); }
+                    if (section.Name == "StudentSchoolEnrolments") { _studentschoolenrolmentpermissions = parseSyncPermissionSection(section); }                    
                 }
             }
 
@@ -221,8 +225,8 @@ namespace MetricDataGatherer
                 SchoolPermissions = _schoolPermissions,
                 StudentGradePlacementPermissions = _studentGradePlacementPermissions,
                 StudentPermissions = _studentPermissions,
-                ExpectedAttendancePermissions = _expectedAttendancePermissions
-
+                ExpectedAttendancePermissions = _expectedAttendancePermissions,
+                StudentSchoolEnrolmentPermissions = _studentschoolenrolmentpermissions
             };
         }
     }

@@ -37,9 +37,14 @@ namespace LSSDMetricsLibrary
         }
                
         public decimal GetAttendanceRate(DateTime from, DateTime to)
-        {
+        {            
             int expectedBlocks = GetExpectedAttendance(from, to);
             int absencesToday = GetNumAbsences(from, to);
+
+            if (expectedBlocks == 0)
+            {
+                return -1;
+            }
 
             return (decimal)(((decimal)expectedBlocks - (decimal)absencesToday) / (decimal)expectedBlocks);
         }

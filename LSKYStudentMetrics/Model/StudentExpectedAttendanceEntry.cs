@@ -10,9 +10,7 @@ namespace LSSDMetricsLibrary
     {
         public int iStudentID { get; set; }
         public int iSchoolYearID { get; set; }
-        public int Year { get; set; }
-        public int Month { get; set; }
-        public int Day { get; set; }
+        public DateTime Date { get; set; }        
         public int BlocksToday { get; set; }
 
         public UpdateCheck CheckIfUpdatesAreRequired(StudentExpectedAttendanceEntry obj)
@@ -20,9 +18,9 @@ namespace LSSDMetricsLibrary
             // For this object, the "ID" is every field except blockstoday
             if (
                 (this.iStudentID != obj.iStudentID) ||
-                (this.Year != obj.Year) ||
-                (this.Month != obj.Month) ||
-                (this.Day != obj.Day)
+                (this.Date.Year != obj.Date.Year) ||
+                (this.Date.Month != obj.Date.Month) ||
+                (this.Date.Date != obj.Date.Date)
                 )
             {
                 return UpdateCheck.NotSameObject;
