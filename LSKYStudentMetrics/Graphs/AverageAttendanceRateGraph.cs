@@ -24,7 +24,7 @@ namespace LSSDMetricsLibrary.Graphs
             InternalSchoolRepository _schoolRepo = new InternalSchoolRepository(InternalConnectionString);
             InternalStudentRepository _studentRepo = new InternalStudentRepository(InternalConnectionString);
             InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
-            InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString);
+            InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, startDate, endDate);
 
             // Generate some data points
             foreach (School school in _schoolRepo.GetAll())

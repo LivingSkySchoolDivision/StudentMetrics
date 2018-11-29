@@ -11,11 +11,23 @@ namespace LSSDMetricsLibrary.Repositories.Internal
     {
         private InternalStudentExpectedAttendanceRepository _expectedAttendanceRepo;
         private StudentAbsenceHelperRepository _studentAbsenceHelperRepo;
-        
+
         public InternalStudentAttendanceRateRepository(string SQLConnectionString)
         {
             this._expectedAttendanceRepo = new InternalStudentExpectedAttendanceRepository(SQLConnectionString);
             this._studentAbsenceHelperRepo = new StudentAbsenceHelperRepository(SQLConnectionString);
+        }
+
+        /// <summary>
+        /// Speed up repeated processes by preloading data for the specified dates
+        /// </summary>
+        /// <param name="SQLConnectionString"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        public InternalStudentAttendanceRateRepository(string SQLConnectionString, DateTime startDate, DateTime endDate)
+        {
+            this._expectedAttendanceRepo = new InternalStudentExpectedAttendanceRepository(SQLConnectionString, startDate, endDate);
+            this._studentAbsenceHelperRepo = new StudentAbsenceHelperRepository(SQLConnectionString, startDate, endDate);
         }
 
         public StudentAttendanceRate GetForStudent(int iStudentID, DateTime startDate, DateTime endDate)

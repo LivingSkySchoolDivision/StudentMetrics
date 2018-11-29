@@ -9,10 +9,20 @@ using System.Threading.Tasks;
 namespace LSSDMetricsLibrary.Repositories.Internal
 {
     public class InternalAbsenceRepository
-    {
-        // This repo deals with data too big to effectively cache, so it easier and faster to do seperate queries
+    {        
         private string SQLConnectionString = string.Empty;
 
+        Dictionary<int, List<Absence>> _cacheByStudentID = new Dictionary<int, List<Absence>>();
+        // So we can track how many absences the student has without loading them all
+        // Mostly so we know when we need to load more data
+        Dictionary<int, int> _absenceCounts = new Dictionary<int, int>();
+
+        // Should this repo pull data from a preloaded cache, or should it pull directly from the database
+        bool _cachedMode = false;
+        bool _cacheLoaded = false;
+        DateTime _cache_startDate;
+        DateTime _cache_endDate;
+                
         private InternalAbsenceReasonRepository _reasonRepo = null;
         private InternalAbsenceStatusRepository _statusRepo = null;
 
@@ -37,12 +47,111 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             };
         }
 
+        private void updateKnownAbsenceCounts()
+        {
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            {
+                _absenceCounts = new Dictionary<int, int>();
+                _absenceCounts.Clear();
+
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT iStudentID, COUNT(*) as NumRecords FROM Attendance GROUP BY iStudentID";
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                int iStudentID = Parsers.ParseInt(dataReader["iStudentID"].ToString());
+                                int numRecords = Parsers.ParseInt(dataReader["NumRecords"].ToString());
+                                _absenceCounts.Add(iStudentID, numRecords);
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidConnectionStringException("Connection string is empty");
+            }
+        }
+
+        private bool checkIfCacheReloadIsNeeded(DateTime startDate, DateTime endDate)
+        {
+            if (!_cacheLoaded) { return true; }
+            if (startDate != _cache_startDate) { return true; }
+            if (endDate != _cache_endDate) { return true; }
+            return false;
+        }
+
+        private void loadCache(DateTime startDate, DateTime endDate)
+        {
+            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            {
+                _cacheByStudentID = new Dictionary<int, List<Absence>>();
+                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = connection;
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE dDate>=@STARTDATE AND dDate<=@ENDDATE";
+                        sqlCommand.Parameters.AddWithValue("STARTDATE", startDate);
+                        sqlCommand.Parameters.AddWithValue("ENDDATE", endDate);
+                        sqlCommand.Connection.Open();
+                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Absence parsedObject = dataReaderToObject(dataReader);
+                                if (parsedObject != null)
+                                {
+                                    // Add object to the cache
+                                    if (!_cacheByStudentID.ContainsKey(parsedObject.iStudentID))
+                                    {
+                                        _cacheByStudentID.Add(parsedObject.iStudentID, new List<Absence>());
+                                    }
+                                    _cacheByStudentID[parsedObject.iStudentID].Add(parsedObject);
+                                }
+                            }
+                        }
+                        sqlCommand.Connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                throw new InvalidConnectionStringException("Connection string is empty");
+            }
+
+            _cacheLoaded = true;
+            _cache_startDate = startDate;
+            _cache_endDate = endDate;
+        }        
+
+        // When getting absences for a student
 
         public InternalAbsenceRepository(string SQLConnectionString)
         {
             this.SQLConnectionString = SQLConnectionString;
             this._reasonRepo = new InternalAbsenceReasonRepository(SQLConnectionString);
             this._statusRepo = new InternalAbsenceStatusRepository(SQLConnectionString);
+        }
+
+        public InternalAbsenceRepository(string SQLConnectionString, DateTime startDate, DateTime endDate)
+        {
+            this._cachedMode = true;
+            this.SQLConnectionString = SQLConnectionString;
+            this._reasonRepo = new InternalAbsenceReasonRepository(SQLConnectionString);
+            this._statusRepo = new InternalAbsenceStatusRepository(SQLConnectionString);
+            updateKnownAbsenceCounts();
         }
 
         public List<int> GetAllIDs()
@@ -83,44 +192,7 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             }
             return returnMe;
         }
-
-        [Obsolete("You probably shouldn't be using this method, unless you are definitely only requiring one single absence record. Do not use this method in a loop.")]
-        public Absence Get(int iAbsenceStatusID)
-        {
-            if (!string.IsNullOrEmpty(this.SQLConnectionString))
-            {
-                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
-                {
-                    using (SqlCommand sqlCommand = new SqlCommand())
-                    {
-                        sqlCommand.Connection = connection;
-                        sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "SELECT * FROM Attendance;";
-                        sqlCommand.Connection.Open();
-                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
-                        if (dataReader.HasRows)
-                        {
-                            while (dataReader.Read())
-                            {
-                                Absence parsedObject = dataReaderToObject(dataReader);
-                                if (parsedObject != null)
-                                {
-                                    return parsedObject;
-                                }
-                            }
-                        }
-                        sqlCommand.Connection.Close();
-                    }
-                }
-            }
-            else
-            {
-                throw new InvalidConnectionStringException("Connection string is empty");
-            }
-
-            return null;
-        }
-
+        
         /// <summary>
         /// Gets all absences from the internal database. This can take a very long time.
         /// </summary>
@@ -198,83 +270,25 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             }
             return returnMe;
         }
+                
 
-        public List<Absence> Get(DateTime startDate, DateTime endDate)
-        {
-            List<Absence> returnMe = new List<Absence>();
-            if (!string.IsNullOrEmpty(this.SQLConnectionString))
-            {
-                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
-                {
-                    using (SqlCommand sqlCommand = new SqlCommand())
-                    {
-                        sqlCommand.Connection = connection;
-                        sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE dDate>=@STARTDATE AND dDate<=@ENDDATE";
-                        sqlCommand.Parameters.AddWithValue("STARTDATE", startDate);
-                        sqlCommand.Parameters.AddWithValue("ENDDATE", endDate);
-                        sqlCommand.Connection.Open();
-                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
-                        if (dataReader.HasRows)
-                        {
-                            while (dataReader.Read())
-                            {
-                                Absence parsedObject = dataReaderToObject(dataReader);
-                                if (parsedObject != null)
-                                {
-                                    returnMe.Add(parsedObject);
-                                }
-                            }
-                        }
-                        sqlCommand.Connection.Close();
-                    }
-                }
-            }
-            else
-            {
-                throw new InvalidConnectionStringException("Connection string is empty");
-            }
-            return returnMe;
-        }
-        
         public List<Absence> GetForStudent(int iStudentID, DateTime startDate, DateTime endDate)
         {
-            List<Absence> returnMe = new List<Absence>();
-            if (!string.IsNullOrEmpty(this.SQLConnectionString))
+            if ((!_cacheLoaded) || (checkIfCacheReloadIsNeeded(startDate, endDate)))
             {
-                using (SqlConnection connection = new SqlConnection(SQLConnectionString))
-                {
-                    using (SqlCommand sqlCommand = new SqlCommand())
-                    {
-                        sqlCommand.Connection = connection;
-                        sqlCommand.CommandType = CommandType.Text;
-                        sqlCommand.CommandText = "SELECT * FROM Attendance WHERE iStudentID=@STUDID AND dDate>=@STARTDATE AND dDate<=@ENDDATE";
-                        sqlCommand.Parameters.AddWithValue("STUDID", iStudentID);
-                        sqlCommand.Parameters.AddWithValue("STARTDATE", startDate);
-                        sqlCommand.Parameters.AddWithValue("ENDDATE", endDate);
-                        sqlCommand.Connection.Open();
-                        SqlDataReader dataReader = sqlCommand.ExecuteReader();
-                        if (dataReader.HasRows)
-                        {
-                            while (dataReader.Read())
-                            {
-                                Absence parsedObject = dataReaderToObject(dataReader);
-                                if (parsedObject != null)
-                                {
-                                    returnMe.Add(parsedObject);
-                                }
-                            }
-                        }
-                        sqlCommand.Connection.Close();
-                    }
-                }
+                loadCache(startDate, endDate);
             }
-            else
+
+            try
             {
-                throw new InvalidConnectionStringException("Connection string is empty");
+                return _cacheByStudentID[iStudentID];
             }
-            return returnMe;
+            catch { }
+
+            return new List<Absence>();
         }
+
+
 
         public void Add(List<Absence> objs)
         {

@@ -30,7 +30,7 @@ public partial class Debug_Test : System.Web.UI.Page
         Response.Write("<BR>" + stopwatch.Elapsed + ": Init school status repository");
         InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
         Response.Write("<BR>" + stopwatch.Elapsed + ": Init attendance rate repository");
-        InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString);
+        InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, startDate, endDate);
         Response.Write("<BR>" + stopwatch.Elapsed + ": Repository setup complete");
         // Generate some data points
         Response.Write("<BR>" + stopwatch.Elapsed + ": Start looping through schools");
@@ -56,6 +56,7 @@ public partial class Debug_Test : System.Web.UI.Page
             List<decimal> attendanceRatesFNM = new List<decimal>();
 
             Response.Write("<BR>" + stopwatch.Elapsed + ": > Start attendance rate collection for all students");
+            // This is where we see the tremendous lag
             foreach (Student s in schoolStudents)
             {
                 StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID, startDate, endDate);

@@ -16,6 +16,11 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             _absenceRepo = new InternalAbsenceRepository(SQLConnectionString);
         }
 
+        public StudentAbsenceHelperRepository(string SQLConnectionString, DateTime startDate, DateTime endDate)
+        {
+            _absenceRepo = new InternalAbsenceRepository(SQLConnectionString, startDate, endDate);
+        }
+
         public StudentAbsenceHelper GetForStudent(int iStudentID, DateTime startDate, DateTime endDate)
         {
             StudentAbsenceHelper returnMe = new StudentAbsenceHelper(iStudentID, _absenceRepo.GetForStudent(iStudentID, startDate, endDate));
