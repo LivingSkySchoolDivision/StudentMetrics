@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSSDMetricsLibrary.GraphDataPoints
 {
-    class AverageAttendanceRateGraphDataPoint : IComparable<AverageAttendanceRateGraphDataPoint>
+    public class AverageAttendanceRateGraphDataPoint : IComparable<AverageAttendanceRateGraphDataPoint>
     {
         public School School { get; set; }
         public decimal AttendanceRate { get; set; }
