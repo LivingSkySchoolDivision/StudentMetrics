@@ -6,7 +6,8 @@
     <h1>Student Data Charts</h1>
     <ul>
         <li><a href="/Charts/AverageAttendanceRates.aspx">Attendance Rates for last 30 days</a> (Test/Example chart)</li>
-        <li><a href="/Charts/TargetAttendanceRates.aspx">Target Attendance Rate</a> % Students with at least x% attendance rate</li>
+        <li>Target Attendance Rate [ <a href="/Charts/TargetAttendanceRates.aspx">All Students</a> | <a href="/Charts/FNMAttendanceRates.aspx">FNM vs NonFNM</a> ] % Students with at least x% attendance rate</li>
+        
     </ul>
 </asp:Content>
 
