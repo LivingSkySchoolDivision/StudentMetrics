@@ -45,8 +45,9 @@
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\GenericListExtensions.cs" />
-    <Compile Include="GraphDataPoints\AverageAttendanceRateGraphDataPoint.cs" />
-    <Compile Include="Graphs\AverageAttendanceRateGraph.cs" />
+    <Compile Include="Model\ChartParts\AverageAttendanceRateGraphDataPoint.cs" />
+    <Compile Include="Charts\AverageAttendanceRateChart.cs" />
+    <Compile Include="Charts\TargetAttendanceRateChart.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
     <Compile Include="Helpers\StudentAbsenceHelper.cs" />
@@ -55,6 +56,8 @@
     <Compile Include="Model\AbsenceReason.cs" />
     <Compile Include="Model\AbsenceStatus.cs" />
     <Compile Include="Model\CalendarDay.cs" />
+    <Compile Include="Model\ChartParts\BarChartDataBar.cs" />
+    <Compile Include="Model\ChartParts\BarChartDataSeries.cs" />
     <Compile Include="Model\EnrolmentType.cs" />
     <Compile Include="Model\Exceptions\ConfigFileNotFoundException.cs" />
     <Compile Include="Model\Exceptions\InvalidConfigFileException.cs" />

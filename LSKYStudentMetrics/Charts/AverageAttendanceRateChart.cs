@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 using System.Drawing.Imaging;
 using LSSDMetricsLibrary.Extensions;
 
-namespace LSSDMetricsLibrary.Graphs
+namespace LSSDMetricsLibrary.Charts
 {
 
-    public class AverageAttendanceRateGraph
+    public class AverageAttendanceRateChart
     {
         Dictionary<School, AverageAttendanceRateGraphDataPoint> _graphDataPoints = new Dictionary<School, AverageAttendanceRateGraphDataPoint>();
         private string chartTitle = string.Empty;
         private string chartSubTitle = string.Empty;
 
-        public AverageAttendanceRateGraph(string InternalConnectionString, DateTime startDate, DateTime endDate, string ChartTitle)
+        public AverageAttendanceRateChart(string InternalConnectionString, DateTime startDate, DateTime endDate, string ChartTitle)
         {
             chartTitle = ChartTitle;
             chartSubTitle = startDate.ToShortDateString() + " to " + endDate.ToShortDateString();
