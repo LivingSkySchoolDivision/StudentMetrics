@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSSDMetricsLibrary.Model.ChartParts
+namespace LSSDMetricsLibrary.Charts
 {
     public class BarChartDataSeries
     {

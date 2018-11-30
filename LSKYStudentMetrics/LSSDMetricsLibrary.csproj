@@ -41,13 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Charts\FNMTargetAttendanceRateChart.cs" />
+    <Compile Include="Charts\HorizontalBarChart.cs" />
+    <Compile Include="Charts\TotalTargetAttendanceRateChart.cs" />
     <Compile Include="Extensions\AbsenceListExtensions.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\GenericListExtensions.cs" />
     <Compile Include="Model\ChartParts\AverageAttendanceRateGraphDataPoint.cs" />
     <Compile Include="Charts\AverageAttendanceRateChart.cs" />
-    <Compile Include="Charts\TargetAttendanceRateChart.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
     <Compile Include="Helpers\StudentAbsenceHelper.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Model\Exceptions\InvalidConfigFileException.cs" />
     <Compile Include="Model\Exceptions\InvalidConnectionStringException.cs" />
     <Compile Include="Model\Exceptions\InvalidSchoolYearException.cs" />
+    <Compile Include="Model\Exceptions\NoGraphDataException.cs" />
     <Compile Include="Model\Exceptions\SyntaxException.cs" />
     <Compile Include="Model\GradeLevel.cs" />
     <Compile Include="Model\School.cs" />

@@ -1,6 +1,5 @@
 ﻿using LSSDMetricsLibrary;
 using LSSDMetricsLibrary.Repositories.Internal;
-using LSSDMetricsLibrary.GraphDataPoints;
 using System;
 using System.Collections.Generic;
 using System.IO;
