@@ -13,7 +13,7 @@ public partial class Graphs_TargetAttendanceRates : System.Web.UI.Page
         decimal targetAttendanceRate = (decimal)0.85;
         DateTime startDate = new DateTime(2018, 9, 4);
         DateTime endDate = DateTime.Today.AddHours(-1);
-        TargetAttendanceRateChart graph = new TargetAttendanceRateChart(Config.dbConnectionString, startDate, endDate, targetAttendanceRate);
+        TotalTargetAttendanceRateChart graph = new TotalTargetAttendanceRateChart(Config.dbConnectionString, startDate, endDate, targetAttendanceRate);
         SendImage(graph.DrawGraph());
     }
 

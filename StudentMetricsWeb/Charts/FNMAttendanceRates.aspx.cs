@@ -1,16 +1,16 @@
-﻿using LSSDMetricsLibrary.Charts;
-using System;
+﻿using System;
+using LSSDMetricsLibrary.Charts;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class Graphs_AverageAttendanceRates : System.Web.UI.Page
+public partial class Charts_FNMAttendanceRates : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        AverageAttendanceRateChart graph = new AverageAttendanceRateChart(Config.dbConnectionString, DateTime.Now.AddDays(-30), DateTime.Now);
+        FNMTargetAttendanceRateChart graph = new FNMTargetAttendanceRateChart(Config.dbConnectionString, DateTime.Now.AddDays(-30), DateTime.Now, (decimal)0.85);
         SendImage(graph.DrawGraph());
 
     }

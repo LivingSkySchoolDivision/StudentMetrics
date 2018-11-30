@@ -1,26 +1,21 @@
-﻿using LSSDMetricsLibrary;
-using LSSDMetricsLibrary.Repositories.Internal;
+﻿using LSSDMetricsLibrary.Repositories.Internal;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing.Imaging;
-using LSSDMetricsLibrary.Extensions;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class AverageAttendanceRateChart : HorizontalBarChart
+    public class TotalTargetAttendanceRateChart : HorizontalBarChart
     {
         List<string> _schoolGovIDBlacklist = new List<string>()
         {
             "2020500"
         };
-        public AverageAttendanceRateChart(string InternalConnectionString, DateTime startDate, DateTime endDate)
+        public TotalTargetAttendanceRateChart(string InternalConnectionString, DateTime startDate, DateTime endDate, decimal targetRate)
         {
-            this.Title = "Average attendance rate";
+            this.Title = "% Students with at least " + ((decimal)targetRate * 100).ToString("0") + "% Attendance Rate";
             this.SubTitle = startDate.ToShortDateString() + " to " + endDate.ToShortDateString();
 
             // Load all schools
@@ -30,7 +25,7 @@ namespace LSSDMetricsLibrary.Charts
             InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, startDate, endDate);
 
             ChartData = new List<BarChartDataSeries>();
-
+            
             // Generate some data points
             foreach (School school in _schoolRepo.GetAll().Where(x => !_schoolGovIDBlacklist.Contains(x.GovernmentID)))
             {
@@ -55,7 +50,7 @@ namespace LSSDMetricsLibrary.Charts
                     decimal attendanceRate = sar.GetAttendanceRate(startDate, endDate);
                     if (attendanceRate != -1)
                     {
-                        attendanceRatesAllStudents.Add(attendanceRate);
+                        attendanceRatesAllStudents.Add(attendanceRate);                        
                     }
                 }
 
@@ -71,20 +66,21 @@ namespace LSSDMetricsLibrary.Charts
 
                 if (attendanceRatesAllStudents.Count > 0)
                 {
-                    decimal averageAttendanceRate = attendanceRatesAllStudents.Average();
+                    decimal totalAttendanceRate = (decimal)((decimal)attendanceRatesAllStudents.Count(x => x >= targetRate) / (decimal)attendanceRatesAllStudents.Count());
                     schoolGraphData.DataPoints.Add(new BarChartPercentBar()
                     {
-                        Value = averageAttendanceRate,
-                        Label = (averageAttendanceRate * 100).ToString("0.##") + "%",
+                        Value = totalAttendanceRate,
+                        Label = (totalAttendanceRate * 100).ToString("0.##") + "%",
                         ID = 0
                     });
                 }
-
+                
                 if (schoolGraphData.DataPoints.Count > 0)
                 {
                     this.ChartData.Add(schoolGraphData);
                 }
             }
         }
+
     }
 }

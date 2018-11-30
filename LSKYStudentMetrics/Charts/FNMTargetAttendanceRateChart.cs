@@ -1,26 +1,22 @@
-﻿using LSSDMetricsLibrary;
-using LSSDMetricsLibrary.Repositories.Internal;
+﻿using LSSDMetricsLibrary.Repositories.Internal;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing.Imaging;
-using LSSDMetricsLibrary.Extensions;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class AverageAttendanceRateChart : HorizontalBarChart
+    public class FNMTargetAttendanceRateChart : HorizontalBarChart
     {
         List<string> _schoolGovIDBlacklist = new List<string>()
         {
             "2020500"
         };
-        public AverageAttendanceRateChart(string InternalConnectionString, DateTime startDate, DateTime endDate)
+
+        public FNMTargetAttendanceRateChart(string InternalConnectionString, DateTime startDate, DateTime endDate, decimal targetRate)
         {
-            this.Title = "Average attendance rate";
+            this.Title = "% Students with at least " + ((decimal)targetRate * 100).ToString("0") + "% Attendance Rate";
             this.SubTitle = startDate.ToShortDateString() + " to " + endDate.ToShortDateString();
 
             // Load all schools
@@ -30,6 +26,13 @@ namespace LSSDMetricsLibrary.Charts
             InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, startDate, endDate);
 
             ChartData = new List<BarChartDataSeries>();
+
+            // Set up the legend
+            Legend = new Dictionary<int, string>()
+            {
+                {0,"Non First-Nations Students" },
+                { 1,"First-Nations Students" }                
+            };
 
             // Generate some data points
             foreach (School school in _schoolRepo.GetAll().Where(x => !_schoolGovIDBlacklist.Contains(x.GovernmentID)))
@@ -46,7 +49,8 @@ namespace LSSDMetricsLibrary.Charts
                 // Calculate each student's attendance rate for the given time period
                 // Throw out rates that are -1, because they are invalid
                 // Keep a running tally of all attendance rates, and of those from first nations students
-                List<decimal> attendanceRatesAllStudents = new List<decimal>();
+                List<decimal> attendanceRatesNonFNM = new List<decimal>();
+                List<decimal> attendanceRatesFNM = new List<decimal>();
 
                 foreach (Student s in schoolStudents)
                 {
@@ -54,14 +58,15 @@ namespace LSSDMetricsLibrary.Charts
 
                     decimal attendanceRate = sar.GetAttendanceRate(startDate, endDate);
                     if (attendanceRate != -1)
-                    {
-                        attendanceRatesAllStudents.Add(attendanceRate);
+                    {                     
+                        if (s.IsFirstNations)
+                        {
+                            attendanceRatesFNM.Add(attendanceRate);
+                        } else
+                        {
+                            attendanceRatesNonFNM.Add(attendanceRate);
+                        }
                     }
-                }
-
-                if (attendanceRatesAllStudents.Count == 0)
-                {
-                    continue;
                 }
 
                 BarChartDataSeries schoolGraphData = new BarChartDataSeries()
@@ -69,16 +74,47 @@ namespace LSSDMetricsLibrary.Charts
                     Label = school.ShortName
                 };
 
-                if (attendanceRatesAllStudents.Count > 0)
+                try
                 {
-                    decimal averageAttendanceRate = attendanceRatesAllStudents.Average();
+                    decimal nonFNMAttendanceRate = (decimal)((decimal)attendanceRatesNonFNM.Count(x => x >= targetRate) / (decimal)attendanceRatesNonFNM.Count());
                     schoolGraphData.DataPoints.Add(new BarChartPercentBar()
                     {
-                        Value = averageAttendanceRate,
-                        Label = (averageAttendanceRate * 100).ToString("0.##") + "%",
+                        Value = nonFNMAttendanceRate,
+                        Label = (nonFNMAttendanceRate * 100).ToString("0.##") + "%",
                         ID = 0
                     });
                 }
+                catch
+                {/*
+                    schoolGraphData.DataPoints.Add(new BarChartPercentBar()
+                    {
+                        Value = 0,
+                        Label = "Unknown",
+                        ID = 0
+                    });
+                    */
+                }
+
+                try
+                {
+                    decimal fnmAttendanceRate = (decimal)((decimal)attendanceRatesFNM.Count(x => x >= targetRate) / (decimal)attendanceRatesFNM.Count());
+                    schoolGraphData.DataPoints.Add(new BarChartPercentBar()
+                    {
+                        Value = fnmAttendanceRate,
+                        Label = (fnmAttendanceRate * 100).ToString("0.##") + "%",
+                        ID = 1
+                    });
+                }
+                catch
+                {/*
+                    schoolGraphData.DataPoints.Add(new BarChartPercentBar()
+                    {
+                        Value = 0,
+                        Label = "Unknown",
+                        ID = 1
+                    });*/
+                }
+                
 
                 if (schoolGraphData.DataPoints.Count > 0)
                 {
@@ -86,5 +122,7 @@ namespace LSSDMetricsLibrary.Charts
                 }
             }
         }
+
+
     }
 }
