@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class HorizontalBarChart
+    public class HorizontalBarChartGenerator
     {
         public string Title = string.Empty;
         public string SubTitle = string.Empty;
@@ -20,9 +20,9 @@ namespace LSSDMetricsLibrary.Charts
         protected List<BarChartDataSeries> ChartData = new List<BarChartDataSeries>();
         protected Dictionary<int, string> Legend = new Dictionary<int, string>();
 
-        public HorizontalBarChart() { }
+        public HorizontalBarChartGenerator() { }
 
-        public HorizontalBarChart(List<BarChartDataSeries> ChartData, Dictionary<int, string> Legend)
+        public HorizontalBarChartGenerator(List<BarChartDataSeries> ChartData, Dictionary<int, string> Legend)
         {
             this.ChartData = ChartData;
             this.Legend = Legend;

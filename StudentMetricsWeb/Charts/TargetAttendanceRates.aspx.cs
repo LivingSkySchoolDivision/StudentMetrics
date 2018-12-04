@@ -1,4 +1,5 @@
-﻿using LSSDMetricsLibrary.Charts;
+﻿using LSSDMetricsLibrary;
+using LSSDMetricsLibrary.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,15 @@ public partial class Graphs_TargetAttendanceRates : System.Web.UI.Page
         decimal targetAttendanceRate = (decimal)0.85;
         DateTime startDate = new DateTime(2018, 9, 4);
         DateTime endDate = DateTime.Today.AddHours(-1);
-        TotalTargetAttendanceRateChart graph = new TotalTargetAttendanceRateChart(Config.dbConnectionString, startDate, endDate, targetAttendanceRate);
-        SendImage(graph.DrawGraph());
+
+        TotalTargetAttendanceRateChart chart = new TotalTargetAttendanceRateChart()
+        {
+            StartDate = startDate,
+            EndDate = endDate,
+            TargetRate = targetAttendanceRate
+        };
+
+        SendImage(chart.Generate(Config.dbConnectionString));
     }
 
     private void SendImage(byte[] graphicBits)

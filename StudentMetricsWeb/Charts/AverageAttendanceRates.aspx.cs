@@ -1,4 +1,5 @@
-﻿using LSSDMetricsLibrary.Charts;
+﻿using LSSDMetricsLibrary;
+using LSSDMetricsLibrary.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,16 @@ public partial class Graphs_AverageAttendanceRates : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        AverageAttendanceRateChart graph = new AverageAttendanceRateChart(Config.dbConnectionString, DateTime.Now.AddDays(-30), DateTime.Now);
-        SendImage(graph.DrawGraph());
+        DateTime startDate = new DateTime(2018, 9, 4);
+        DateTime endDate = DateTime.Today.AddHours(-1);
 
+        AverageAttendanceRateChart chart = new AverageAttendanceRateChart()
+        {
+            StartDate = startDate,
+            EndDate = endDate
+        };
+
+        SendImage(chart.Generate(Config.dbConnectionString));
     }
 
     private void SendImage(byte[] graphicBits)
