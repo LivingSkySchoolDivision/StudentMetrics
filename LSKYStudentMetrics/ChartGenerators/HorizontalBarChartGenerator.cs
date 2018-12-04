@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class HorizontalBarChartGenerator
+    class HorizontalBarChartGenerator
     {
         public string Title = string.Empty;
         public string SubTitle = string.Empty;

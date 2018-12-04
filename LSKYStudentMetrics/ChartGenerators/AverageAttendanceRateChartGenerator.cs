@@ -12,7 +12,7 @@ using LSSDMetricsLibrary.Extensions;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class AverageAttendanceRateChartGenerator : HorizontalBarChartGenerator
+    class AverageAttendanceRateChartGenerator : HorizontalBarChartGenerator
     {
         List<string> _schoolGovIDBlacklist = new List<string>()
         {

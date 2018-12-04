@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class TotalTargetAttendanceRateChartGenerator : HorizontalBarChartGenerator
+    class TotalTargetAttendanceRateChartGenerator : HorizontalBarChartGenerator
     {
         List<string> _schoolGovIDBlacklist = new List<string>()
         {
