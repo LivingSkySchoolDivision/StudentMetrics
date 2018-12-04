@@ -30,6 +30,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "StudentMetricsWeb", "Studen
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchChartGenerator", "BatchChartGenerator\BatchChartGenerator.csproj", "{C4B3DF64-642A-4518-A662-6A69EE00372A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B6E59A7-8B85-4804-AE22-A4AE04273290}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{C4B3DF64-642A-4518-A662-6A69EE00372A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4B3DF64-642A-4518-A662-6A69EE00372A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4B3DF64-642A-4518-A662-6A69EE00372A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4B3DF64-642A-4518-A662-6A69EE00372A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
