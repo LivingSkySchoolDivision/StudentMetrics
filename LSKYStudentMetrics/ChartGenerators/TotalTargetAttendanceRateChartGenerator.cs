@@ -7,22 +7,24 @@ using System.Threading.Tasks;
 
 namespace LSSDMetricsLibrary.Charts
 {
-    public class TotalTargetAttendanceRateChart : HorizontalBarChart
+    class TotalTargetAttendanceRateChartGenerator : HorizontalBarChartGenerator
     {
         List<string> _schoolGovIDBlacklist = new List<string>()
         {
             "2020500"
         };
-        public TotalTargetAttendanceRateChart(string InternalConnectionString, DateTime startDate, DateTime endDate, decimal targetRate)
+               
+
+        public TotalTargetAttendanceRateChartGenerator(string InternalConnectionString, ChartJob Options)
         {
-            this.Title = "% Students with at least " + ((decimal)targetRate * 100).ToString("0") + "% Attendance Rate";
-            this.SubTitle = startDate.ToShortDateString() + " to " + endDate.ToShortDateString();
+            this.Title = "% Students with at least " + ((decimal)Options.TargetAttendanceRate * 100).ToString("0") + "% Attendance Rate";
+            this.SubTitle = Options.StartDate.ToShortDateString() + " to " + Options.EndDate.ToShortDateString();
 
             // Load all schools
             InternalSchoolRepository _schoolRepo = new InternalSchoolRepository(InternalConnectionString);
             InternalStudentRepository _studentRepo = new InternalStudentRepository(InternalConnectionString);
             InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
-            InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, startDate, endDate);
+            InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, Options.StartDate, Options.EndDate);
 
             ChartData = new List<BarChartDataSeries>();
             
@@ -30,7 +32,7 @@ namespace LSSDMetricsLibrary.Charts
             foreach (School school in _schoolRepo.GetAll().Where(x => !_schoolGovIDBlacklist.Contains(x.GovernmentID)))
             {
                 // Load school students
-                List<Student> schoolStudents = _studentRepo.Get(_schoolStatusRepo.GetStudentIDsEnrolledOn(startDate, endDate, school.iSchoolID, true));
+                List<Student> schoolStudents = _studentRepo.Get(_schoolStatusRepo.GetStudentIDsEnrolledOn(Options.StartDate, Options.EndDate, school.iSchoolID, true));
 
                 // Skip schools that have no students
                 if (schoolStudents.Count == 0)
@@ -45,9 +47,9 @@ namespace LSSDMetricsLibrary.Charts
 
                 foreach (Student s in schoolStudents)
                 {
-                    StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID, startDate, endDate);
+                    StudentAttendanceRate sar = _attendanceRateRepo.GetForStudent(s.iStudentID, Options.StartDate, Options.EndDate);
 
-                    decimal attendanceRate = sar.GetAttendanceRate(startDate, endDate);
+                    decimal attendanceRate = sar.GetAttendanceRate(Options.StartDate, Options.EndDate);
                     if (attendanceRate != -1)
                     {
                         attendanceRatesAllStudents.Add(attendanceRate);                        
@@ -66,7 +68,7 @@ namespace LSSDMetricsLibrary.Charts
 
                 if (attendanceRatesAllStudents.Count > 0)
                 {
-                    decimal totalAttendanceRate = (decimal)((decimal)attendanceRatesAllStudents.Count(x => x >= targetRate) / (decimal)attendanceRatesAllStudents.Count());
+                    decimal totalAttendanceRate = (decimal)((decimal)attendanceRatesAllStudents.Count(x => x >= Options.TargetAttendanceRate) / (decimal)attendanceRatesAllStudents.Count());
                     schoolGraphData.DataPoints.Add(new BarChartPercentBar()
                     {
                         Value = totalAttendanceRate,

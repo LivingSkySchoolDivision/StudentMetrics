@@ -41,15 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Charts\FNMTargetAttendanceRateChart.cs" />
-    <Compile Include="Charts\HorizontalBarChart.cs" />
-    <Compile Include="Charts\TotalTargetAttendanceRateChart.cs" />
+    <Compile Include="ChartGenerators\FNMTargetAttendanceRateChartGenerator.cs" />
+    <Compile Include="ChartGenerators\HorizontalBarChartGenerator.cs" />
+    <Compile Include="ChartGenerators\TotalTargetAttendanceRateChartGenerator.cs" />
     <Compile Include="Extensions\AbsenceListExtensions.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\GenericListExtensions.cs" />
-    <Compile Include="Model\ChartParts\AverageAttendanceRateGraphDataPoint.cs" />
-    <Compile Include="Charts\AverageAttendanceRateChart.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Helpers\Crypto.cs" />
+    <Compile Include="Model\Exceptions\NoKnownChartGeneratorException.cs" />
+    <Compile Include="ChartGenerators\AverageAttendanceRateChartGenerator.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
     <Compile Include="Helpers\StudentAbsenceHelper.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="Model\CalendarDay.cs" />
     <Compile Include="Model\ChartParts\BarChartDataBar.cs" />
     <Compile Include="Model\ChartParts\BarChartDataSeries.cs" />
+    <Compile Include="Model\ChartType.cs" />
     <Compile Include="Model\EnrolmentType.cs" />
     <Compile Include="Model\Exceptions\ConfigFileNotFoundException.cs" />
     <Compile Include="Model\Exceptions\InvalidConfigFileException.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="Model\Exceptions\NoGraphDataException.cs" />
     <Compile Include="Model\Exceptions\SyntaxException.cs" />
     <Compile Include="Model\GradeLevel.cs" />
+    <Compile Include="Model\ChartJob.cs" />
     <Compile Include="Model\School.cs" />
     <Compile Include="Model\SchoolLogicSpecific\SchoolClass.cs" />
     <Compile Include="Model\SchoolLogicSpecific\SchoolClassSchedule.cs" />
