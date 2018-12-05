@@ -14,8 +14,38 @@ namespace LSSDMetricsLibrary
     {
         public string JobName { get; set; }
         public ChartType ChartType { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        private DateTime _givenStartDate;
+        private DateTime _givenEndDate;
+        public DateTime StartDate {
+            get
+            {
+                if (_givenStartDate > DateTime.Today)
+                {
+                    return DateTime.Today;
+                }
+                return _givenStartDate;
+            }
+            set
+            {
+                _givenStartDate = value;
+            }
+        }
+
+        public DateTime EndDate
+        {
+            get
+            {
+                if (_givenEndDate > DateTime.Today)
+                {
+                    return DateTime.Today;
+                }
+                return _givenEndDate;
+            }
+            set
+            {
+                _givenEndDate = value;
+            }
+        }
         public decimal TargetAttendanceRate { get; set; }
 
         public override string ToString()
