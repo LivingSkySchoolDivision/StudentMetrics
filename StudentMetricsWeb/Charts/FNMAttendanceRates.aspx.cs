@@ -14,12 +14,13 @@ public partial class Charts_FNMAttendanceRates : System.Web.UI.Page
         decimal targetAttendanceRate = (decimal)0.85;
         DateTime startDate = new DateTime(2018, 9, 4);
         DateTime endDate = DateTime.Today.AddHours(-1);
-
-        FNMTargetAttendanceRateChart chart = new FNMTargetAttendanceRateChart()
+        
+        ChartJob chart = new ChartJob()
         {
+            ChartType = ChartType.FNMTargetAttendanceRate,
             StartDate = startDate,
             EndDate = endDate,
-            TargetRate = targetAttendanceRate
+            TargetAttendanceRate = targetAttendanceRate
         };
 
         SendImage(chart.Generate(Config.dbConnectionString));

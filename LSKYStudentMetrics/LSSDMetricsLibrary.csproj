@@ -48,6 +48,9 @@
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\GenericListExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Helpers\Crypto.cs" />
+    <Compile Include="Model\Exceptions\NoKnownChartGeneratorException.cs" />
     <Compile Include="Model\ChartParts\AverageAttendanceRateGraphDataPoint.cs" />
     <Compile Include="ChartGenerators\AverageAttendanceRateChartGenerator.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
@@ -60,10 +63,7 @@
     <Compile Include="Model\CalendarDay.cs" />
     <Compile Include="Model\ChartParts\BarChartDataBar.cs" />
     <Compile Include="Model\ChartParts\BarChartDataSeries.cs" />
-    <Compile Include="Model\Charts\AverageAttendanceRateChart.cs" />
-    <Compile Include="Model\Charts\FNMTargetAttendanceRateChart.cs" />
-    <Compile Include="Model\Charts\iChart.cs" />
-    <Compile Include="Model\Charts\TotalTargetAttendanceRateChart.cs" />
+    <Compile Include="Model\ChartType.cs" />
     <Compile Include="Model\EnrolmentType.cs" />
     <Compile Include="Model\Exceptions\ConfigFileNotFoundException.cs" />
     <Compile Include="Model\Exceptions\InvalidConfigFileException.cs" />
@@ -72,6 +72,7 @@
     <Compile Include="Model\Exceptions\NoGraphDataException.cs" />
     <Compile Include="Model\Exceptions\SyntaxException.cs" />
     <Compile Include="Model\GradeLevel.cs" />
+    <Compile Include="Model\ChartJob.cs" />
     <Compile Include="Model\School.cs" />
     <Compile Include="Model\SchoolLogicSpecific\SchoolClass.cs" />
     <Compile Include="Model\SchoolLogicSpecific\SchoolClassSchedule.cs" />

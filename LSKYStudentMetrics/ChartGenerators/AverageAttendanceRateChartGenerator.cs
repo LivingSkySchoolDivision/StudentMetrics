@@ -18,7 +18,8 @@ namespace LSSDMetricsLibrary.Charts
         {
             "2020500"
         };
-        public AverageAttendanceRateChartGenerator(string InternalConnectionString, AverageAttendanceRateChart Options)
+
+        public AverageAttendanceRateChartGenerator(string InternalConnectionString, ChartJob Options)
         {
             this.Title = "Average attendance rate";
             this.SubTitle = Options.StartDate.ToShortDateString() + " to " + Options.EndDate.ToShortDateString();

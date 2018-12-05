@@ -14,8 +14,9 @@ public partial class Graphs_AverageAttendanceRates : System.Web.UI.Page
         DateTime startDate = new DateTime(2018, 9, 4);
         DateTime endDate = DateTime.Today.AddHours(-1);
 
-        AverageAttendanceRateChart chart = new AverageAttendanceRateChart()
+        ChartJob chart = new ChartJob()
         {
+            ChartType = ChartType.AverageAttendanceRate,
             StartDate = startDate,
             EndDate = endDate
         };

@@ -15,11 +15,12 @@ public partial class Graphs_TargetAttendanceRates : System.Web.UI.Page
         DateTime startDate = new DateTime(2018, 9, 4);
         DateTime endDate = DateTime.Today.AddHours(-1);
 
-        TotalTargetAttendanceRateChart chart = new TotalTargetAttendanceRateChart()
+        ChartJob chart = new ChartJob()
         {
+            ChartType = ChartType.TotalTargetAttendanceRate,
             StartDate = startDate,
             EndDate = endDate,
-            TargetRate = targetAttendanceRate
+            TargetAttendanceRate = targetAttendanceRate
         };
 
         SendImage(chart.Generate(Config.dbConnectionString));

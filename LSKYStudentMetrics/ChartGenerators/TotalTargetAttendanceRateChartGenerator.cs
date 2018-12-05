@@ -13,10 +13,11 @@ namespace LSSDMetricsLibrary.Charts
         {
             "2020500"
         };
+               
 
-        public TotalTargetAttendanceRateChartGenerator(string InternalConnectionString, TotalTargetAttendanceRateChart Options)
+        public TotalTargetAttendanceRateChartGenerator(string InternalConnectionString, ChartJob Options)
         {
-            this.Title = "% Students with at least " + ((decimal)Options.TargetRate * 100).ToString("0") + "% Attendance Rate";
+            this.Title = "% Students with at least " + ((decimal)Options.TargetAttendanceRate * 100).ToString("0") + "% Attendance Rate";
             this.SubTitle = Options.StartDate.ToShortDateString() + " to " + Options.EndDate.ToShortDateString();
 
             // Load all schools
@@ -67,7 +68,7 @@ namespace LSSDMetricsLibrary.Charts
 
                 if (attendanceRatesAllStudents.Count > 0)
                 {
-                    decimal totalAttendanceRate = (decimal)((decimal)attendanceRatesAllStudents.Count(x => x >= Options.TargetRate) / (decimal)attendanceRatesAllStudents.Count());
+                    decimal totalAttendanceRate = (decimal)((decimal)attendanceRatesAllStudents.Count(x => x >= Options.TargetAttendanceRate) / (decimal)attendanceRatesAllStudents.Count());
                     schoolGraphData.DataPoints.Add(new BarChartPercentBar()
                     {
                         Value = totalAttendanceRate,

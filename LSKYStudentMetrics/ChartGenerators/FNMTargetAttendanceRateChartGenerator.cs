@@ -14,9 +14,9 @@ namespace LSSDMetricsLibrary.Charts
             "2020500"
         };
 
-        public FNMTargetAttendanceRateChartGenerator(string InternalConnectionString, FNMTargetAttendanceRateChart Options)
+        public FNMTargetAttendanceRateChartGenerator(string InternalConnectionString, ChartJob Options)
         {
-            this.Title = "% Students with at least " + ((decimal)Options.TargetRate * 100).ToString("0") + "% Attendance Rate";
+            this.Title = "% Students with at least " + ((decimal)Options.TargetAttendanceRate * 100).ToString("0") + "% Attendance Rate";
             this.SubTitle = Options.StartDate.ToShortDateString() + " to " + Options.EndDate.ToShortDateString();
 
             // Load all schools
@@ -76,7 +76,7 @@ namespace LSSDMetricsLibrary.Charts
 
                 try
                 {
-                    decimal nonFNMAttendanceRate = (decimal)((decimal)attendanceRatesNonFNM.Count(x => x >= Options.TargetRate) / (decimal)attendanceRatesNonFNM.Count());
+                    decimal nonFNMAttendanceRate = (decimal)((decimal)attendanceRatesNonFNM.Count(x => x >= Options.TargetAttendanceRate) / (decimal)attendanceRatesNonFNM.Count());
                     schoolGraphData.DataPoints.Add(new BarChartPercentBar()
                     {
                         Value = nonFNMAttendanceRate,
@@ -97,7 +97,7 @@ namespace LSSDMetricsLibrary.Charts
 
                 try
                 {
-                    decimal fnmAttendanceRate = (decimal)((decimal)attendanceRatesFNM.Count(x => x >= Options.TargetRate) / (decimal)attendanceRatesFNM.Count());
+                    decimal fnmAttendanceRate = (decimal)((decimal)attendanceRatesFNM.Count(x => x >= Options.TargetAttendanceRate) / (decimal)attendanceRatesFNM.Count());
                     schoolGraphData.DataPoints.Add(new BarChartPercentBar()
                     {
                         Value = fnmAttendanceRate,
