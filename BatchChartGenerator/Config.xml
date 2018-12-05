@@ -4,4 +4,8 @@
   <Database>
     <ConnectionString>data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false</ConnectionString>    
   </Database>
+  <Other>
+    <InputDirectory></InputDirectory>
+    <OutputDirectory></OutputDirectory>
+  </Other>
 </Settings>

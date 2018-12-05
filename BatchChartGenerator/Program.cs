@@ -15,9 +15,8 @@ namespace BatchChartGenerator
     class Program
     {
         static string _configFileName = "Config.xml";
-        static string _jobsDirectory = "Jobs/";
-        static string _chartOutputDirectory = "Output/";
         static XmlSerializer _chartJobSerializer = new XmlSerializer(typeof(ChartJob));
+        static ConfigFile _configFile = new ConfigFile();
 
         public static void Log(string msg)
         {
@@ -32,6 +31,7 @@ namespace BatchChartGenerator
 
         private static void saveChart(byte[] chartBytes, string fullFileName)
         {
+            Log("Writing " + fullFileName);
             File.WriteAllBytes(fullFileName, chartBytes);
         }
 
@@ -39,9 +39,9 @@ namespace BatchChartGenerator
         {
             // Build the full path
             StringBuilder fullFilePath = new StringBuilder();
-            if (!filename.StartsWith(_jobsDirectory))
+            if (!filename.StartsWith(_configFile.InputDirectory))
             {
-                fullFilePath.Append(_jobsDirectory);
+                fullFilePath.Append(_configFile.InputDirectory);
             }            
             
             fullFilePath.Append(filename);
@@ -80,30 +80,30 @@ namespace BatchChartGenerator
                 }
 
                 // Attempt to load the config file
-                ConfigFile configFile = ConfigFile.LoadFromFile(_configFileName);
+                _configFile = ConfigFile.LoadFromFile(_configFileName);
 
                 // Validate the config file
-                configFile.Validate();
+                _configFile.Validate();
 
                 // Check the jobs directory to see if it exists
                 // If it doesn't, create it
-                if (!Directory.Exists(_jobsDirectory))
+                if (!Directory.Exists(_configFile.InputDirectory))
                 {
-                    Directory.CreateDirectory(_jobsDirectory);
+                    Directory.CreateDirectory(_configFile.InputDirectory);
                 }
 
                 // Check the output directory to see if it exists
                 // If it doesn't, create it
-                if (!Directory.Exists(_chartOutputDirectory))
+                if (!Directory.Exists(_configFile.OutputDirectory))
                 {
-                    Directory.CreateDirectory(_chartOutputDirectory);
+                    Directory.CreateDirectory(_configFile.OutputDirectory);
                 }
 
                 // Attempt to deserialize config files from the jobs folder
-                Log("Loading jobs from: " + _jobsDirectory);
+                Log("Loading jobs from: " + _configFile.InputDirectory);
 
                 List<ChartJob> loadedJobs = new List<ChartJob>();
-                foreach(string fileName in Directory.GetFiles(_jobsDirectory))
+                foreach(string fileName in Directory.GetFiles(_configFile.InputDirectory))
                 {
                     Log("> " + fileName);
                     ChartJob parsedJob = loadSavedJob(fileName);
@@ -120,9 +120,9 @@ namespace BatchChartGenerator
                 foreach(ChartJob job in loadedJobs)
                 {
                     Log("Processing job " + job.JobName);
-                    string fullFileName = _chartOutputDirectory + job.JobName.RemoveSpecialCharacters() + ".png";
+                    string fullFileName = _configFile.OutputDirectory + "/" + job.JobName.RemoveSpecialCharacters() + ".png";
 
-                    byte[] fileBytes = job.Generate(configFile.DatabaseConnectionString);
+                    byte[] fileBytes = job.Generate(_configFile.DatabaseConnectionString);
 
                     if (fileBytes.Length > 0) {
                         // Delete file if it already exists

@@ -14,12 +14,16 @@ namespace BatchChartGenerator
     class ConfigFile
     {        
         public string DatabaseConnectionString { get; set; }
+        public string InputDirectory { get; set; }
+        public string OutputDirectory { get; set; }
         
         public bool Loaded { get; set; }
 
         public ConfigFile()
         {
             DatabaseConnectionString = "data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false";
+            InputDirectory = "Input";
+            OutputDirectory = "Output";
             Loaded = false;
         }
                
@@ -61,7 +65,7 @@ namespace BatchChartGenerator
                 throw new InvalidConfigFileException("Config file not found");
             }
 
-            string connectionString = string.Empty;
+            string connectionString = string.Empty;            
 
             // Load the file into XElement
             XElement configFile = XElement.Load(FileName);
@@ -80,10 +84,49 @@ namespace BatchChartGenerator
                     }
                 }
             }
+            
+            // Other settings
+            string inputDirectory = "Input";
+            string outputDirectory = "Output";
+
+            List<XElement> otherSettingsSection = configFile.Elements("Other").ToList();
+            // Loop through all "Other" sections (hopefully only one)
+            foreach (XElement section in otherSettingsSection)
+            {
+                // Loop through each setting in this section
+                foreach (XElement setting in section.Elements())
+                {
+                    if (setting.Name == "InputDirectory")
+                    {
+                        if (!string.IsNullOrEmpty(setting.Value))
+                        {
+                            inputDirectory = setting.Value;
+                            if (inputDirectory.EndsWith("/"))
+                            {
+                                inputDirectory = inputDirectory.Substring(0, inputDirectory.Length - 1);
+                            }
+                        }
+                    }
+
+                    if (setting.Name == "OutputDirectory")
+                    {
+                        if (!string.IsNullOrEmpty(setting.Value))
+                        {
+                            outputDirectory = setting.Value;
+                            if (outputDirectory.EndsWith("/"))
+                            {
+                                outputDirectory = inputDirectory.Substring(0, inputDirectory.Length - 1);
+                            }
+                        }
+                    }
+                }
+            }
 
             return new ConfigFile()
             {
                 DatabaseConnectionString = connectionString,
+                InputDirectory = inputDirectory,
+                OutputDirectory = outputDirectory,
                 Loaded = true
             };
         }
