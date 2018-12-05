@@ -51,7 +51,6 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Crypto.cs" />
     <Compile Include="Model\Exceptions\NoKnownChartGeneratorException.cs" />
-    <Compile Include="Model\ChartParts\AverageAttendanceRateGraphDataPoint.cs" />
     <Compile Include="ChartGenerators\AverageAttendanceRateChartGenerator.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
     <Compile Include="Helpers\Parsers.cs" />
