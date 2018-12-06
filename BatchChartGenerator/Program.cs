@@ -52,7 +52,7 @@ namespace BatchChartGenerator
 
             if (string.IsNullOrEmpty(ds.JobName))
             {
-                ds.JobName = Crypto.GetMD5(ds.StartDate.ToShortDateString() + ds.EndDate.ToShortDateString() + filename);
+                ds.JobName = Crypto.GetMD5(filename);
             }
 
             return ds;
@@ -105,11 +105,14 @@ namespace BatchChartGenerator
                 List<ChartJob> loadedJobs = new List<ChartJob>();
                 foreach(string fileName in Directory.GetFiles(_configFile.InputDirectory))
                 {
-                    Log("> " + fileName);
-                    ChartJob parsedJob = loadSavedJob(fileName);
-                    if (parsedJob != null)
+                    if (fileName.EndsWith(_configFile.jobFileExtension))
                     {
-                        loadedJobs.Add(parsedJob);
+                        Log("> " + fileName);
+                        ChartJob parsedJob = loadSavedJob(fileName);
+                        if (parsedJob != null)
+                        {
+                            loadedJobs.Add(parsedJob);
+                        }
                     }
                 }
 
