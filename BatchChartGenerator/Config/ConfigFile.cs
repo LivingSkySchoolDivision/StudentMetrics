@@ -16,7 +16,8 @@ namespace BatchChartGenerator
         public string DatabaseConnectionString { get; set; }
         public string InputDirectory { get; set; }
         public string OutputDirectory { get; set; }
-        
+        public string jobFileExtension = ".xml";
+
         public bool Loaded { get; set; }
 
         public ConfigFile()
