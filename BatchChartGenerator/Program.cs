@@ -20,7 +20,14 @@ namespace BatchChartGenerator
 
         public static void Log(string msg)
         {
-            Console.WriteLine(DateTime.Now + ": " + msg);
+            if (_configFile.Loaded)
+            {
+                using (StreamWriter w = File.AppendText(_configFile.LogDirectory + "/" + _configFile.LogFileName))
+                {
+                    w.WriteLine(DateTime.Now + ": " + msg);
+                }
+                Console.WriteLine(DateTime.Now + ": " + msg);
+            }
         }
 
         static void SendSyntax()
@@ -99,6 +106,14 @@ namespace BatchChartGenerator
                     Directory.CreateDirectory(_configFile.OutputDirectory);
                 }
 
+                // Check to see if the log file folder needs to be created
+                if (!Directory.Exists(_configFile.LogDirectory))
+                {
+                    Directory.CreateDirectory(_configFile.LogDirectory);
+                }
+
+                Log("Batch chart generator started");
+
                 // Attempt to deserialize config files from the jobs folder
                 Log("Loading jobs from: " + _configFile.InputDirectory);
 
@@ -106,12 +121,15 @@ namespace BatchChartGenerator
                 foreach(string fileName in Directory.GetFiles(_configFile.InputDirectory))
                 {
                     if (fileName.EndsWith(_configFile.jobFileExtension))
-                    {
-                        Log("> " + fileName);
+                    {                        
                         ChartJob parsedJob = loadSavedJob(fileName);
                         if (parsedJob != null)
                         {
+                            Log(fileName + " (Job will be named: " + parsedJob.JobName + ")");
                             loadedJobs.Add(parsedJob);
+                        } else
+                        {
+                            Log(fileName + " (not a valid job, skipping)");
                         }
                     }
                 }
@@ -139,7 +157,7 @@ namespace BatchChartGenerator
                     }
                 }
 
-                Log("Done!");
+                Log("Batch chart generator complete");
             }
             catch (SyntaxException ex)
             {

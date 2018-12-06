@@ -8,14 +8,24 @@ using LSSDMetricsLibrary.Repositories;
 using LSSDMetricsLibrary.Repositories.SchoolLogic;
 using LSSDMetricsLibrary.Repositories.Internal;
 using MetricDataGatherer.SyncEngine;
+using System.IO;
 
 namespace MetricDataGatherer
 {
     class Program
     {
+        static ConfigFile configFile = new ConfigFile();
+
         public static void Log(string msg)
         {
-            Console.WriteLine(DateTime.Now + ": " + msg);
+            if (configFile.Loaded)
+            {
+                using (StreamWriter w = File.AppendText(configFile.LogDirectory + "/" + configFile.LogFileName))
+                {
+                    w.WriteLine(DateTime.Now + ": " + msg);
+                }
+                Console.WriteLine(DateTime.Now + ": " + msg);
+            }
         }
 
         static void Main(string[] args)
@@ -40,10 +50,18 @@ namespace MetricDataGatherer
                     }
 
                     // Attempt to load the config file
-                    ConfigFile configFile = ConfigFile.LoadFromFile(configFileName);
+                    configFile = ConfigFile.LoadFromFile(configFileName);
                     
                     // Validate the config file
                     configFile.Validate();
+
+                    Log("Data Gatherer started");
+
+                    // Check to see if the log file folder needs to be created
+                    if (!Directory.Exists(configFile.LogDirectory))
+                    {
+                        Directory.CreateDirectory(configFile.LogDirectory);
+                    }
 
                     // Parse the working school year
                     InternalSchoolYearRepository schoolYearRepository = new InternalSchoolYearRepository(configFile.DatabaseConnectionString_Internal);
@@ -63,7 +81,6 @@ namespace MetricDataGatherer
                     Log("Students: \t\t\t" + configFile.StudentPermissions.ToString());
                     Log("ExpectedAttendance: \t\t" + configFile.ExpectedAttendancePermissions.ToString());
                     Log("StudentSchoolEnrolments: \t\t" + configFile.StudentSchoolEnrolmentPermissions.ToString());
-
 
                     LogDelegate logCallback = Log;
 
@@ -96,6 +113,7 @@ namespace MetricDataGatherer
                     // Student school enrolments
                     StudentSchoolEnrolmentSync.Sync(configFile, logCallback);
 
+                    Log("Data Gatherer complete");
                 }
                 else
                 {

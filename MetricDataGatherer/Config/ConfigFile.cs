@@ -13,6 +13,11 @@ namespace MetricDataGatherer
 {
     class ConfigFile
     {
+        private const string _defaultSchoolYearName = "Unknown";
+        private const string _defaultLogDirectory = "Logs";
+        private static string _defaultLogFileName = "DataGatherer-" + DateTime.Today.Year + "-" + DateTime.Today.Month + "-" + DateTime.Today.Day + ".log";
+
+
         public string DatabaseConnectionString_SchoolLogic { get; set; }
         public string DatabaseConnectionString_Internal { get; set; }
         public string SchoolYearName { get; set; }
@@ -26,6 +31,8 @@ namespace MetricDataGatherer
         public ConfigFileSyncPermissionsSection StudentPermissions { get; set; }
         public ConfigFileSyncPermissionsSection ExpectedAttendancePermissions { get; set; }
         public ConfigFileSyncPermissionsSection StudentSchoolEnrolmentPermissions { get; set; }
+        public string LogDirectory { get; set; }
+        public string LogFileName { get; set; }
 
         public ConfigFile()
         {
@@ -33,14 +40,15 @@ namespace MetricDataGatherer
             DatabaseConnectionString_SchoolLogic = "data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false";
             SchoolYearName = "Unknown";
             Loaded = false;
+            LogDirectory = _defaultLogDirectory;
+            LogFileName = _defaultLogFileName;
         }
 
         public override string ToString()
         {
             return "{\n\tInternal Connection String: " + this.DatabaseConnectionString_Internal + "\n\tSchoolLogic connection string: " + this.DatabaseConnectionString_SchoolLogic + "\n\tSchool Year Identifier: " + this.SchoolYearName + "\n}";
         }
-
-
+        
         public bool Validate()
         {
             bool problemdetected = false;
@@ -126,8 +134,7 @@ namespace MetricDataGatherer
                 if (setting.Name == "ForceUpdate")
                 {
                     returnMe.ForceUpdate = Parsers.ParseBool(setting.Value);
-                }                
-
+                } 
             }
 
             return returnMe;
@@ -143,7 +150,9 @@ namespace MetricDataGatherer
             
             string connectionString_Internal = string.Empty;
             string connectionString_SL = string.Empty;
-            string schoolYearID = string.Empty;
+            string schoolYearID = _defaultSchoolYearName;
+            string logDirectory = _defaultLogDirectory;
+            string logFilename = _defaultLogFileName;
             ConfigFileSyncPermissionsSection _absenceReasonPermissions = new ConfigFileSyncPermissionsSection();
             ConfigFileSyncPermissionsSection _absenceStatusPermissions = new ConfigFileSyncPermissionsSection();
             ConfigFileSyncPermissionsSection _absencePermissions = new ConfigFileSyncPermissionsSection();
@@ -196,7 +205,6 @@ namespace MetricDataGatherer
                 }
             }
 
-
             // Other settings
             List<XElement> otherSettingsSection = configFile.Elements("Other").ToList();
             // Loop through all "Other" sections (hopefully only one)
@@ -208,6 +216,26 @@ namespace MetricDataGatherer
                     if (setting.Name == "SchoolYearID")
                     {
                         schoolYearID = setting.Value;
+                    }
+
+                    if (setting.Name == "LogDirectory")
+                    {
+                        if (!string.IsNullOrEmpty(setting.Value))
+                        {
+                            logDirectory = setting.Value;
+                            if (logDirectory.EndsWith("/"))
+                            {
+                                logDirectory = logDirectory.Substring(0, logDirectory.Length - 1);
+                            }
+                        }
+                    }
+
+                    if (setting.Name == "LogFileName")
+                    {
+                        if (!string.IsNullOrEmpty(setting.Value))
+                        {
+                            logFilename = setting.Value;
+                        }
                     }
                 }
             }
@@ -226,7 +254,9 @@ namespace MetricDataGatherer
                 StudentGradePlacementPermissions = _studentGradePlacementPermissions,
                 StudentPermissions = _studentPermissions,
                 ExpectedAttendancePermissions = _expectedAttendancePermissions,
-                StudentSchoolEnrolmentPermissions = _studentschoolenrolmentpermissions
+                StudentSchoolEnrolmentPermissions = _studentschoolenrolmentpermissions,
+                LogDirectory = logDirectory,
+                LogFileName = logFilename
             };
         }
     }

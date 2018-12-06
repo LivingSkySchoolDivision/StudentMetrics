@@ -7,6 +7,8 @@
   </Database>
   <Other>
     <SchoolYearID>2018-2019</SchoolYearID>
+    <LogDirectory></LogDirectory>
+    <LogFileName></LogFileName>
   </Other>
   <AppPermissions>
     <Absences>

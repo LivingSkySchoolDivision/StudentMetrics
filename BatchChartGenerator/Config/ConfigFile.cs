@@ -12,22 +12,33 @@ using System.Xml.Linq;
 namespace BatchChartGenerator
 {
     class ConfigFile
-    {        
+    {
+        private const string _defaultLogDirectory = "Logs";
+        private static string _defaultLogFileName = "ChartGen-" + DateTime.Today.Year + "-" + DateTime.Today.Month + "-" + DateTime.Today.Day + ".log";
+        private const string _defaultInputDirectory = "Input";
+        private const string _defaultOutputDirectory = "Output";
+        private const string _defaultInputFileExtension = ".xml";        
+
         public string DatabaseConnectionString { get; set; }
         public string InputDirectory { get; set; }
-        public string OutputDirectory { get; set; }
-        public string jobFileExtension = ".xml";
+        public string OutputDirectory { get; set; }        
+        public string LogDirectory { get; set; }
+        public string LogFileName { get; set; }
+        public string jobFileExtension = _defaultInputFileExtension;
 
         public bool Loaded { get; set; }
 
         public ConfigFile()
         {
-            DatabaseConnectionString = "data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false";
-            InputDirectory = "Input";
-            OutputDirectory = "Output";
             Loaded = false;
+            DatabaseConnectionString = "data source=HOSTNAME;initial catalog=DATABASE;user id=USERNAME;password=PASSWORD;Trusted_Connection=false";
+            InputDirectory = _defaultInputDirectory;
+            OutputDirectory = _defaultOutputDirectory;
+            LogDirectory = _defaultLogDirectory;
+            LogFileName = _defaultLogFileName;
+            jobFileExtension = _defaultInputFileExtension;
         }
-               
+
         public bool Validate()
         {
             bool problemdetected = false;            
@@ -58,7 +69,6 @@ namespace BatchChartGenerator
             return !problemdetected;
         }
         
-
         public static ConfigFile LoadFromFile(string FileName)
         {
             if (!File.Exists(FileName))
@@ -85,10 +95,12 @@ namespace BatchChartGenerator
                     }
                 }
             }
-            
+
             // Other settings
-            string inputDirectory = "Input";
-            string outputDirectory = "Output";
+            string inputDirectory = _defaultInputDirectory;
+            string outputDirectory = _defaultOutputDirectory;
+            string logDirectory = _defaultLogDirectory;
+            string logFilename = _defaultLogFileName;
 
             List<XElement> otherSettingsSection = configFile.Elements("Other").ToList();
             // Loop through all "Other" sections (hopefully only one)
@@ -116,8 +128,28 @@ namespace BatchChartGenerator
                             outputDirectory = setting.Value;
                             if (outputDirectory.EndsWith("/"))
                             {
-                                outputDirectory = inputDirectory.Substring(0, inputDirectory.Length - 1);
+                                outputDirectory = outputDirectory.Substring(0, outputDirectory.Length - 1);
                             }
+                        }
+                    }
+
+                    if (setting.Name == "LogDirectory")
+                    {
+                        if (!string.IsNullOrEmpty(setting.Value))
+                        {
+                            logDirectory = setting.Value;
+                            if (logDirectory.EndsWith("/"))
+                            {
+                                logDirectory = logDirectory.Substring(0, logDirectory.Length - 1);
+                            }
+                        }
+                    }
+
+                    if (setting.Name == "LogFileName")
+                    {
+                        if (!string.IsNullOrEmpty(setting.Value))
+                        {
+                            logFilename = setting.Value;
                         }
                     }
                 }
@@ -128,7 +160,9 @@ namespace BatchChartGenerator
                 DatabaseConnectionString = connectionString,
                 InputDirectory = inputDirectory,
                 OutputDirectory = outputDirectory,
-                Loaded = true
+                Loaded = true,
+                LogDirectory = logDirectory,
+                LogFileName = logFilename
             };
         }
     }
