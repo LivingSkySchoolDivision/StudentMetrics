@@ -52,7 +52,7 @@ namespace BatchChartGenerator
 
             if (string.IsNullOrEmpty(ds.JobName))
             {
-                ds.JobName = Crypto.GetMD5(ds.StartDate.ToShortDateString() + ds.EndDate.ToShortDateString() + filename);
+                ds.JobName = Crypto.GetMD5(filename);
             }
 
             return ds;
