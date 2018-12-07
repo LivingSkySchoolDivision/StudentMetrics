@@ -18,6 +18,7 @@ namespace LSSDMetricsLibrary
         UNKNOWN,
         AverageAttendanceRate,
         TotalTargetAttendanceRate,
-        FNMTargetAttendanceRate
+        FNMTargetAttendanceRate,
+        SchoolYearTargetAttendance
     }
 }

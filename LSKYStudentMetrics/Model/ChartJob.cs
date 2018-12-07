@@ -65,6 +65,8 @@ namespace LSSDMetricsLibrary
                     return (new FNMTargetAttendanceRateChartGenerator(SQLConnectionString, this).DrawGraph());
                 case ChartType.TotalTargetAttendanceRate:
                     return (new TotalTargetAttendanceRateChartGenerator(SQLConnectionString, this).DrawGraph());
+                case ChartType.SchoolYearTargetAttendance:
+                    return (new SchoolYearTargetAttendanceChartGenerator(SQLConnectionString, this).DrawGraph());
             }          
 
             throw new NoKnownChartGeneratorException("Unknown chart type.");

@@ -173,5 +173,23 @@ namespace LSSDMetricsLibrary
             }
             return returnMe;
         }
+
+        /// <summary>
+        /// Finds the school year of the given date, returning the year that the school year STARTS in
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static int FindSchoolYear(DateTime date)
+        {
+            if ((date.Month >= 1) && (date.Month <= 7))
+            {
+                return date.Year - 1;
+            }
+            else
+            {
+                return date.Year;
+            }
+        }
+
     }
 }

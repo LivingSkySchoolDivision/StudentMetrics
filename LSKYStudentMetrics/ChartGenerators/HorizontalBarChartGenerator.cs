@@ -67,7 +67,7 @@ namespace LSSDMetricsLibrary.Charts
         {
             if (this.ChartData.Count == 0)
             {
-                throw new NoGraphDataException("No graph data, can't create empty graph.");
+                throw new NoGraphDataException("No chart data, can't create empty chart.");
             }
 
             Font font_title = new Font("Arial", 16, FontStyle.Bold);

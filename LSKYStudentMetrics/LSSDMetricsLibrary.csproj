@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="ChartGenerators\FNMTargetAttendanceRateChartGenerator.cs" />
     <Compile Include="ChartGenerators\HorizontalBarChartGenerator.cs" />
+    <Compile Include="ChartGenerators\LineChartGenerator.cs" />
+    <Compile Include="ChartGenerators\SchoolYearTargetAttendanceChartGenerator.cs" />
     <Compile Include="ChartGenerators\TotalTargetAttendanceRateChartGenerator.cs" />
     <Compile Include="Extensions\AbsenceListExtensions.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="Extensions\GenericListExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Crypto.cs" />
+    <Compile Include="Model\ChartParts\LineChartLine.cs" />
     <Compile Include="Model\Exceptions\NoKnownChartGeneratorException.cs" />
     <Compile Include="ChartGenerators\AverageAttendanceRateChartGenerator.cs" />
     <Compile Include="Helpers\ConfigFile.cs" />
