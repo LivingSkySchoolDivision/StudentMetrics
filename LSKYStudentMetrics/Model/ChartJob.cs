@@ -47,6 +47,12 @@ namespace LSSDMetricsLibrary
             }
         }
         public decimal TargetAttendanceRate { get; set; }
+        public List<int> LimitSchools { get; set; }
+
+        public ChartJob()
+        {
+            this.LimitSchools = new List<int>();
+        }
 
         public override string ToString()
         {

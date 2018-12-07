@@ -35,8 +35,6 @@ namespace LSSDMetricsLibrary.Charts
             this.ShowValuesInChart = true;
 
             // Labels / Data points will be one for each month
-       
-
             this.Lines = new List<LineChartLine>();
 
             // DATA NEEDED FOR THIS REPORT
@@ -48,6 +46,20 @@ namespace LSSDMetricsLibrary.Charts
             InternalStudentRepository studentRepo = new InternalStudentRepository(InternalConnectionString);
             InternalStudentSchoolEnrolmentRepository schoolEnrolmentRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
             InternalStudentAttendanceRateRepository attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, Options.StartDate, Options.EndDate);
+            InternalSchoolRepository schoolRepo = new InternalSchoolRepository(InternalConnectionString);
+
+            // Determine limiting schools (if any)
+            List<int> limitediSchoolIDs = new List<int>();
+            if (Options.LimitSchools.Count > 0)
+            {
+                limitediSchoolIDs = Options.LimitSchools;
+                List<string> schoolNames = schoolRepo.Get(limitediSchoolIDs).Select(x => x.Name).ToList<string>();
+                this.SubSubTitle = this.SubTitle;
+                this.SubTitle = schoolNames.ToCommaSeparatedString();
+            } else
+            {
+                limitediSchoolIDs = schoolRepo.GetAllKnownSchoolIDs();
+            }
 
             LineChartLine fnmStudentsLine = new LineChartLine() { Label = "FNM Students" };
             LineChartLine nonFNMStudentsLine = new LineChartLine() { Label = "Non-FNM Students" };
@@ -102,7 +114,7 @@ namespace LSSDMetricsLibrary.Charts
                 // Now, load all the enrolled students during the start and end of the month
                 // and calculate their average attendances
 
-                List<Student> enrolledStudentsThisMonth = studentRepo.Get(schoolEnrolmentRepo.GetStudentIDsEnrolledOn(month.Starts, month.Ends, true));
+                List<Student> enrolledStudentsThisMonth = studentRepo.Get(schoolEnrolmentRepo.GetStudentIDsEnrolledOn(month.Starts, month.Ends, limitediSchoolIDs, true));
                 if (enrolledStudentsThisMonth.Count == 0)
                 {
                     continue;

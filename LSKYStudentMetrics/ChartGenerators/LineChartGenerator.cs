@@ -14,6 +14,7 @@ namespace LSSDMetricsLibrary.Charts
     {
         public string Title = string.Empty;
         public string SubTitle = string.Empty;
+        public string SubSubTitle = string.Empty;
         public int Width = 1000;
         public int Height = 750;
         public bool ShowValuesInChart = false;
@@ -76,6 +77,7 @@ namespace LSSDMetricsLibrary.Charts
 
             Font font_title = new Font("Arial", 16, FontStyle.Bold);
             Font font_subtitle = new Font("Arial", 12, FontStyle.Bold);
+            Font font_subsubtitle = new Font("Arial", 10, FontStyle.Bold);
             Font font_xAxisLabels = new Font("Arial", 10, FontStyle.Bold);
             Font font_yAxisLabels = new Font("Arial", 10, FontStyle.Bold);
             Font font_Legend = new Font("Arial", 8, FontStyle.Bold);
@@ -116,12 +118,35 @@ namespace LSSDMetricsLibrary.Charts
             Bitmap bitmap = new Bitmap(Width, Height);
             Graphics graphics = Graphics.FromImage(bitmap);
 
-            // Calculate how much space we need for the title section
-            SizeF titleSize = graphics.MeasureString(Title, font_title);
-            SizeF subTitleSize = graphics.MeasureString(SubTitle, font_subtitle);
-            actualTitleAreaSpace = titleSize.Height + subTitleSize.Height + titleAfterPadding;
+            // Calculate how much space we need for the title section            
+            actualTitleAreaSpace = 0;
+
             float titleY = 0;
-            float subTitleY = titleY + titleSize.Height;
+            float subTitleY = 0;
+            float subSubTitleY = 0;
+
+            if (!string.IsNullOrEmpty(this.Title))
+            {
+                SizeF titleSize = graphics.MeasureString(Title, font_title);
+                actualTitleAreaSpace += titleSize.Height;
+            }
+
+            if (!string.IsNullOrEmpty(this.SubTitle))
+            {
+                SizeF subTitleSize = graphics.MeasureString(SubTitle, font_subtitle);
+                actualTitleAreaSpace += subTitleSize.Height;
+                subTitleY = titleY + subTitleSize.Height;
+            }
+
+            if (!string.IsNullOrEmpty(this.SubSubTitle))
+            {
+                SizeF subSubTitleSize = graphics.MeasureString(SubSubTitle, font_subsubtitle);
+                actualTitleAreaSpace += subSubTitleSize.Height;
+                subSubTitleY = subTitleY + subSubTitleSize.Height;
+            }
+
+            actualTitleAreaSpace += titleAfterPadding;
+
 
             // Calculate how much space we need for the legend
             float totalLegendHeight = 0;
@@ -155,8 +180,20 @@ namespace LSSDMetricsLibrary.Charts
             graphics.Clear(graphBackgroundColor);
 
             // Draw titles
-            graphics.DrawString(Title, font_title, brush_Title, Width / 2, titleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
-            graphics.DrawString(SubTitle, font_subtitle, brush_Title, Width / 2, subTitleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            if (!string.IsNullOrEmpty(this.Title))
+            {
+                graphics.DrawString(Title, font_title, brush_Title, Width / 2, titleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            }
+
+            if (!string.IsNullOrEmpty(this.SubTitle))
+            {
+                graphics.DrawString(SubTitle, font_subtitle, brush_Title, Width / 2, subTitleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            }
+
+            if (!string.IsNullOrEmpty(this.SubSubTitle))
+            {
+                graphics.DrawString(SubSubTitle, font_subsubtitle, brush_Title, Width / 2, subSubTitleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            }
 
             // Legend
             if (this.Lines.Count > 1)

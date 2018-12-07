@@ -113,7 +113,7 @@ namespace BatchChartGenerator
                 }
 
                 Log("Batch chart generator started");
-
+                               
                 // Attempt to deserialize config files from the jobs folder
                 Log("Loading jobs from: " + _configFile.InputDirectory);
 

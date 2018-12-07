@@ -133,9 +133,14 @@ namespace LSSDMetricsLibrary.Repositories.Internal
 
         public List<int> GetStudentIDsEnrolledOn(DateTime dateSpanStart, DateTime dateSpanEnd, int iSchoolID, bool baseEnrollmentsOnly)
         {
+            return GetStudentIDsEnrolledOn(dateSpanStart, dateSpanEnd, new List<int>() { iSchoolID }, baseEnrollmentsOnly);
+        }
+
+        public List<int> GetStudentIDsEnrolledOn(DateTime dateSpanStart, DateTime dateSpanEnd, List<int> iSchoolIDs, bool baseEnrollmentsOnly)
+        {
             List<int> returnMe = new List<int>();
 
-            foreach (StudentSchoolEnrolment sse in _cacheByID.Values.Where(x => x.iSchoolID == iSchoolID))
+            foreach (StudentSchoolEnrolment sse in _cacheByID.Values.Where(x => iSchoolIDs.Contains(x.iSchoolID)))
             {
                 if (!returnMe.Contains(sse.iStudentID))
                 {

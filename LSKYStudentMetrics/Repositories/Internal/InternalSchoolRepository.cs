@@ -69,6 +69,21 @@ namespace LSSDMetricsLibrary.Repositories.Internal
             return _cache.Keys.ToList();
         }
 
+        public List<School> Get(List<int> iSchoolIDs)
+        {
+            List<School> returnMe = new List<School>();
+
+            foreach(int id in iSchoolIDs)
+            {
+                if (_cache.ContainsKey(id))
+                {
+                    returnMe.Add(_cache[id]);
+                }
+            }
+
+            return returnMe;
+        }
+
         public School Get(int iSchoolID)
         {
             if (_cache.ContainsKey(iSchoolID))
