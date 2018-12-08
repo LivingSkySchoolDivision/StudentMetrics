@@ -13,6 +13,7 @@ namespace LSSDMetricsLibrary.Charts
     {
         public string Title = string.Empty;
         public string SubTitle = string.Empty;
+        public string SubSubTitle = string.Empty;
         public int Height = 200;
         public int Width = 750;
         public bool ShowBarValuesOnEndOfBar = true;
@@ -72,6 +73,7 @@ namespace LSSDMetricsLibrary.Charts
 
             Font font_title = new Font("Arial", 16, FontStyle.Bold);
             Font font_subtitle = new Font("Arial", 12, FontStyle.Bold);
+            Font font_subsubtitle = new Font("Arial", 10, FontStyle.Bold);
             Font font_Label = new Font("Arial", 10, FontStyle.Bold);
             Font font_barValue = new Font("Arial", 10, FontStyle.Bold);
             Font font_Legend = new Font("Arial", 8, FontStyle.Bold);
@@ -92,6 +94,7 @@ namespace LSSDMetricsLibrary.Charts
             int legendBoxSize = (int)barHeight; // How big (in pixels) to make the legend colour box
             int legendItemPadding = 4; // Padding between legend items
             int legendTextSpacing = 2; // Spacing between the legend colour box and the text
+            int titlePadding = 2; // Padding between titles
 
             // Variables that will sort themselves out as the graph gets generated. 
             // Probably best to not touch these
@@ -135,11 +138,32 @@ namespace LSSDMetricsLibrary.Charts
             barMaxWidth = Width - largestLabelWidth - labelPadding - barRightEdgePadding;
 
             // Calculate how much space we need for the title section
-            SizeF titleSize = graphics.MeasureString(Title, font_title);
-            SizeF subTitleSize = graphics.MeasureString(SubTitle, font_subtitle);
-            actualTitleAreaSpace = titleSize.Height + subTitleSize.Height + titleAfterPadding;
             float titleY = 0;
-            float subTitleY = titleY + titleSize.Height;
+            float subTitleY = 0;
+            float subSubTitleY = 0;
+
+            if (!string.IsNullOrEmpty(this.Title))
+            {
+                SizeF titleSize = graphics.MeasureString(Title, font_title);
+                actualTitleAreaSpace += titleSize.Height + titlePadding;
+            }
+
+            if (!string.IsNullOrEmpty(this.SubTitle))
+            {
+                SizeF subTitleSize = graphics.MeasureString(SubTitle, font_subtitle);
+                actualTitleAreaSpace += subTitleSize.Height + titlePadding;
+                subTitleY = titleY + subTitleSize.Height + titlePadding;
+            }
+
+            if (!string.IsNullOrEmpty(this.SubSubTitle))
+            {
+                SizeF subSubTitleSize = graphics.MeasureString(SubSubTitle, font_subsubtitle);
+                actualTitleAreaSpace += subSubTitleSize.Height + titlePadding;
+                subSubTitleY = subTitleY + subSubTitleSize.Height + titlePadding;
+            }
+
+            actualTitleAreaSpace += titleAfterPadding;
+
 
             // Calculate how much space we need for the legend
             float totalLegendHeight = 0;
@@ -167,10 +191,21 @@ namespace LSSDMetricsLibrary.Charts
             // Set a background colour
             graphics.Clear(graphBackgroundColor);
 
-            // Title Area
+            // Draw titles
+            if (!string.IsNullOrEmpty(this.Title))
+            {
+                graphics.DrawString(Title, font_title, brush_Title, Width / 2, titleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            }
 
-            graphics.DrawString(Title, font_title, brush_Title, Width / 2, titleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
-            graphics.DrawString(SubTitle, font_subtitle, brush_Title, Width / 2, subTitleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            if (!string.IsNullOrEmpty(this.SubTitle))
+            {
+                graphics.DrawString(SubTitle, font_subtitle, brush_Title, Width / 2, subTitleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            }
+
+            if (!string.IsNullOrEmpty(this.SubSubTitle))
+            {
+                graphics.DrawString(SubSubTitle, font_subsubtitle, brush_Title, Width / 2, subSubTitleY, new StringFormat() { LineAlignment = StringAlignment.Near, Alignment = StringAlignment.Center });
+            }
 
             // Legend
             if (maxBarsPerSeries > 1)

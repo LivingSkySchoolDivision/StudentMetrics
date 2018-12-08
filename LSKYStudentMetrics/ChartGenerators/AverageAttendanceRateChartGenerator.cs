@@ -22,18 +22,30 @@ namespace LSSDMetricsLibrary.Charts
         public AverageAttendanceRateChartGenerator(string InternalConnectionString, ChartJob Options)
         {
             this.Title = "Average attendance rate";
-            this.SubTitle = Options.StartDate.ToShortDateString() + " to " + Options.EndDate.ToShortDateString();
+            this.SubTitle = Options.StartDate.ToShortDateString() + " to " + Options.EndDate.ToShortDateString();            
 
             // Load all schools
             InternalSchoolRepository _schoolRepo = new InternalSchoolRepository(InternalConnectionString);
             InternalStudentRepository _studentRepo = new InternalStudentRepository(InternalConnectionString);
             InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
             InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, Options.StartDate, Options.EndDate);
+            InternalSchoolRepository schoolRepo = new InternalSchoolRepository(InternalConnectionString);
+
+            // Determine limiting schools (if any)
+            List<int> limitediSchoolIDs = new List<int>();
+            if (Options.LimitSchools.Count > 0)
+            {
+                limitediSchoolIDs = Options.LimitSchools;
+            }
+            else
+            {
+                limitediSchoolIDs = schoolRepo.GetAllKnownSchoolIDs();
+            }
 
             ChartData = new List<BarChartDataSeries>();
 
             // Generate some data points
-            foreach (School school in _schoolRepo.GetAll().Where(x => !_schoolGovIDBlacklist.Contains(x.GovernmentID)))
+            foreach (School school in _schoolRepo.GetAll().Where(x => !_schoolGovIDBlacklist.Contains(x.GovernmentID) && limitediSchoolIDs.Contains(x.iSchoolID)))
             {
                 // Load school students
                 List<Student> schoolStudents = _studentRepo.Get(_schoolStatusRepo.GetStudentIDsEnrolledOn(Options.StartDate, Options.EndDate, school.iSchoolID, true));

@@ -107,12 +107,11 @@ namespace LSSDMetricsLibrary.Charts
             int xAxisPipSize = 5;
             int dataPointPipSize = 5;
             decimal yAxisInterval = (decimal)0.1; // How often are the pips and labels on the y axis (In percent)?
+            int titlePadding = 2; // Padding between titles
 
             // Variables that will sort themselves out as the graph gets generated. 
             // Probably best to not touch these
             float actualTitleAreaSpace = 0;
-            float largestLabelHeight = 0;
-            float largestLabelWidth = 0;
 
             // Set up the bitmap and graphics objects
             Bitmap bitmap = new Bitmap(Width, Height);
@@ -128,21 +127,21 @@ namespace LSSDMetricsLibrary.Charts
             if (!string.IsNullOrEmpty(this.Title))
             {
                 SizeF titleSize = graphics.MeasureString(Title, font_title);
-                actualTitleAreaSpace += titleSize.Height;
+                actualTitleAreaSpace += titleSize.Height + titlePadding;
             }
 
             if (!string.IsNullOrEmpty(this.SubTitle))
             {
                 SizeF subTitleSize = graphics.MeasureString(SubTitle, font_subtitle);
-                actualTitleAreaSpace += subTitleSize.Height;
-                subTitleY = titleY + subTitleSize.Height;
+                actualTitleAreaSpace += subTitleSize.Height + titlePadding;
+                subTitleY = titleY + subTitleSize.Height + titlePadding;
             }
 
             if (!string.IsNullOrEmpty(this.SubSubTitle))
             {
                 SizeF subSubTitleSize = graphics.MeasureString(SubSubTitle, font_subsubtitle);
-                actualTitleAreaSpace += subSubTitleSize.Height;
-                subSubTitleY = subTitleY + subSubTitleSize.Height;
+                actualTitleAreaSpace += subSubTitleSize.Height + titlePadding;
+                subSubTitleY = subTitleY + subSubTitleSize.Height + titlePadding;
             }
 
             actualTitleAreaSpace += titleAfterPadding;

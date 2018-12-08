@@ -25,6 +25,18 @@ namespace LSSDMetricsLibrary.Charts
             InternalStudentRepository _studentRepo = new InternalStudentRepository(InternalConnectionString);
             InternalStudentSchoolEnrolmentRepository _schoolStatusRepo = new InternalStudentSchoolEnrolmentRepository(InternalConnectionString);
             InternalStudentAttendanceRateRepository _attendanceRateRepo = new InternalStudentAttendanceRateRepository(InternalConnectionString, Options.StartDate, Options.EndDate);
+            InternalSchoolRepository schoolRepo = new InternalSchoolRepository(InternalConnectionString);
+
+            // Determine limiting schools (if any)
+            List<int> limitediSchoolIDs = new List<int>();
+            if (Options.LimitSchools.Count > 0)
+            {
+                limitediSchoolIDs = Options.LimitSchools;
+            }
+            else
+            {
+                limitediSchoolIDs = schoolRepo.GetAllKnownSchoolIDs();
+            }
 
             ChartData = new List<BarChartDataSeries>();
             
